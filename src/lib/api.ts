@@ -8,7 +8,7 @@ import type { PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats 
  * surface on the public site. Anything that needs client-side data goes through
  * a Next route handler acting as a thin proxy.
  */
-const API_ORIGIN = process.env.API_ORIGIN ?? "http://localhost:8080";
+const API_ORIGIN = process.env.API_ORIGIN ?? "http://localhost:8888";
 
 /** How long a fetched resource stays fresh before ISR revalidates it. */
 export const REVALIDATE = {

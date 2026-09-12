@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
  * persistence, future CRM/notification wiring) lives in Java; this just
  * forwards the body and relays the status back.
  */
-const API_ORIGIN = process.env.API_ORIGIN ?? "http://localhost:8080";
+const API_ORIGIN = process.env.API_ORIGIN ?? "http://localhost:8888";
 
 export async function POST(request: Request) {
   let body: unknown;
