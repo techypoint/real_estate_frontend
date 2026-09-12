@@ -1,0 +1,943 @@
+/* ---------------------------------------------------------------------
+   AcreInfotech design system — two themes, user-selectable: Arctic Violet
+   (light, default) and Mono + Pop (dark). See
+   ../../.claude/skills/minimal-mobile-design/SKILL.md for the full spec.
+   Base rules target a ~375px phone; desktop is layered on with
+   min-width queries only.
+
+   Theming mechanism: :root carries the Arctic Violet (light) tokens as
+   the default — no attribute needed. `<html data-theme="dark">` (set by
+   ThemeToggle/ThemeScript, see components/ThemeToggle.tsx) switches to
+   Mono + Pop via the override block below. Every other rule in this file
+   references the custom properties only, never a literal color, so the
+   whole site repaints from these two blocks alone.
+------------------------------------------------------------------------ */
+/* Self-hosted — no runtime font-CDN dependency. Files in ../fonts/. */
+
+@font-face {
+  font-family: "Archivo Black";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/archivo-black-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122;
+}
+
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/public-sans-variable.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122;
+}
+
+:root {
+  /* color — Arctic Violet (light, default theme) */
+  --bg: #f7f6fb;
+  --surface: #ffffff;
+  --surface-2: #ede9f7;
+  --border: #e1dcf0;
+  --border-strong: #cbc2e6;
+
+  --text: #1b1730;
+  --text-muted: #6c6591;
+  --text-faint: #a49dc4;
+
+  --accent: #7c5cf0;
+  --accent-strong: #6a48e0;
+  --accent-on: #ffffff;
+  --accent-glow: rgba(124, 92, 240, .30);
+
+  --gold: #1a9c6b;
+  --gold-soft: #e2f5ec;
+  --gold-strong: #127850;
+
+  --skel-highlight: #ffffff;
+  --ambient-1: rgba(124, 92, 240, .20);
+  --ambient-2: rgba(124, 92, 240, .16);
+
+  /* type */
+  --font-display: "Archivo Black", system-ui, sans-serif;
+  --font-body: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.5rem;
+  --text-xl: 2.25rem;
+  --text-2xl: 3.5rem;
+
+  /* spacing — spacious */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px; --sp-20: 80px; --sp-24: 96px;
+
+  /* shape — sharp & structured, no pills */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* elevation / glow */
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4), 0 16px 32px -14px rgba(0,0,0,.65);
+  --glow-accent: 0 0 0 1px var(--accent-glow), 0 8px 24px -6px var(--accent-glow);
+
+  /* motion */
+  --ease: cubic-bezier(.16,1,.3,1);
+  --dur-fast: 150ms;
+  --dur: 300ms;
+  --dur-slow: 500ms;
+
+  --bottom-nav-h: 64px;
+
+  /* Floor-plan plate. Brochure plans are light artwork printed on near-black,
+     so they sit on their own neutral plate rather than on the emerald surface —
+     tinting it green would cast the artwork. */
+  --plan-plate: #0d0d0d;
+
+  font-family: var(--font-body);
+}
+
+:root[data-theme="dark"] {
+  /* color — Mono + Pop (dark theme) */
+  --bg: #0a0a0a;
+  --surface: #161616;
+  --surface-2: #1e1e1e;
+  --border: #2c2c2c;
+  --border-strong: #3a3a3a;
+
+  --text: #f5f5f5;
+  --text-muted: #9e9e9e;
+  --text-faint: #666666;
+
+  --accent: #d4ff3f;
+  --accent-strong: #e3ff70;
+  --accent-on: #0a0a0a;
+  --accent-glow: rgba(212, 255, 63, .30);
+
+  --gold: #ffffff;
+  --gold-soft: #242424;
+  --gold-strong: #ffffff;
+
+  --skel-highlight: #2c2c2c;
+  --ambient-1: rgba(212, 255, 63, .16);
+  --ambient-2: rgba(212, 255, 63, .12);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; padding: 0; }
+/* NOTE: do NOT set overflow-x (or max-width) to a non-visible value on html
+   or body. Two confirmed regressions from having done that:
+   1. On body, a non-visible overflow-x forces overflow-y:auto (CSS overflow
+      computation), turning body into its own scroll container and breaking
+      position:sticky for every descendant (header/jump-nav stopped sticking).
+   2. On html specifically, this is the classic iOS Safari bug that breaks
+      position:fixed for descendants — a fixed element renders as if static,
+      appearing wherever it sits in the DOM (e.g. the bottom nav showing up
+      after the footer instead of pinned to the screen) instead of tracking
+      the viewport. Confirmed by testing and matches this exact symptom.
+   Horizontal-overflow prevention is handled by the targeted min-width:0 /
+   overflow-wrap:anywhere fixes elsewhere in this file — that's the actual
+   fix; a blanket overflow-x:hidden here is redundant AND actively harmful. */
+body {
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: var(--text-base);
+  -webkit-text-size-adjust: 100%;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button, input, select { font-family: inherit; font-size: var(--text-base); }
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; font-weight: 900; text-wrap: balance; }
+.num, .stat-card .num { font-variant-numeric: tabular-nums; }
+
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+.icon { width: 20px; height: 20px; flex: none; display: inline-block; color: currentColor; }
+.icon-sm { width: 16px; height: 16px; }
+
+.container { max-width: 1180px; margin: 0 auto; padding: 0 var(--sp-4); }
+@media (min-width: 768px) { .container { padding: 0 var(--sp-6); } }
+
+.page-body { padding-bottom: calc(var(--bottom-nav-h) + var(--sp-6)); }
+@media (min-width: 1024px) { .page-body { padding-bottom: 0; } }
+
+/* ---------- Motion primitives ---------- */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rise-in { animation: rise-in var(--dur-slow) var(--ease) both; }
+.rise-in-1 { animation-delay: 40ms; }
+.rise-in-2 { animation-delay: 100ms; }
+.rise-in-3 { animation-delay: 160ms; }
+@media (prefers-reduced-motion: reduce) { .rise-in { animation: none; } }
+
+/* ---------- Header ---------- */
+header.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.site-header .bar { display: flex; align-items: center; justify-content: space-between; min-height: 60px; padding: var(--sp-2) 0; gap: var(--sp-3); }
+.brand { display: flex; align-items: center; gap: var(--sp-3); }
+.brand .mark { flex: none; width: 34px; height: 34px; color: var(--accent); }
+.brand .word { display: flex; flex-direction: column; line-height: 1.15; }
+.brand .word .primary { font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.01em; color: var(--text); }
+.brand .word small { font-family: var(--font-body); font-weight: 600; font-size: 10px; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+
+.site-header nav { display: none; }
+@media (min-width: 1024px) {
+  .site-header nav { display: flex; gap: var(--sp-6); }
+  .site-header nav a { font-size: var(--text-sm); font-weight: 600; color: var(--text-muted); min-height: 44px; display: flex; align-items: center; transition: color var(--dur-fast) var(--ease); }
+  .site-header nav a:hover { color: var(--accent); }
+}
+
+.header-actions { display: flex; align-items: center; gap: var(--sp-4); }
+
+.theme-toggle {
+  flex: none;
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.theme-toggle:hover { border-color: var(--border-strong); color: var(--accent); }
+.theme-toggle:active { transform: scale(.96); }
+.theme-toggle .icon { width: 19px; height: 19px; }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; padding: var(--sp-16) 0 var(--sp-12); overflow: hidden; }
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -30% -20% auto -20%;
+  height: 560px;
+  background: radial-gradient(55% 55% at 30% 25%, var(--ambient-1), rgba(0,0,0,0) 70%);
+  pointer-events: none;
+}
+.hero .container { position: relative; }
+.hero h1 {
+  font-size: var(--text-xl);
+  line-height: 1.15;
+  margin: 0 0 var(--sp-4);
+  color: var(--text);
+  max-width: 20ch;
+}
+.hero p { color: var(--text-muted); margin: 0 0 var(--sp-8); max-width: 52ch; font-size: var(--text-base); }
+@media (min-width: 768px) {
+  .hero h1 { font-size: var(--text-2xl); max-width: 24ch; }
+  .hero p { font-size: var(--text-md); }
+}
+
+.searchbar { display: flex; gap: var(--sp-3); }
+.search-field { flex: 1 1 auto; min-width: 0; position: relative; display: flex; align-items: center; }
+.search-field .icon { position: absolute; left: var(--sp-4); color: var(--text-faint); }
+.search-field input {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--sp-4) 0 calc(var(--sp-4) * 2 + 16px);
+  height: 52px;
+  font-size: var(--text-base);
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.search-field input::placeholder { color: var(--text-faint); }
+.search-field input:focus { border-color: var(--accent); }
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  height: 52px;
+  padding: 0 var(--sp-5);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.btn:active { transform: scale(.96); }
+.btn-primary { background: var(--accent); color: var(--accent-on); }
+.btn-primary:hover { background: var(--accent-strong); box-shadow: var(--glow-accent); }
+.btn-outline { background: transparent; color: var(--text); border-color: var(--border-strong); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+.filter-toggle-row { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+
+.chip-scroll {
+  display: flex; gap: var(--sp-2); margin-top: var(--sp-4);
+  overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.chip-scroll::-webkit-scrollbar { display: none; }
+.chip-toggle {
+  flex: none;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  height: 38px;
+  padding: 0 var(--sp-4);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.chip-toggle[aria-pressed="true"] { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+
+.active-filters { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+.active-filters:empty { display: none; }
+.filter-chip {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  background: var(--surface-2); color: var(--accent-strong); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-3);
+  font-size: var(--text-xs); font-weight: 700; cursor: pointer;
+}
+.filter-chip .icon { width: 14px; height: 14px; }
+
+/* Generic bottom-sheet mechanics (scrim + sliding panel) — stays a real
+   fixed sheet at every screen size. .filter-panel below is a MODIFIER on
+   top of this that additionally turns the homepage filter bar into an
+   inline row at desktop; the project page's Sections sheet uses .sheet
+   alone (its trigger is hidden at desktop anyway — see .bottom-nav — but
+   the sheet itself must never fall back to inline content behind it). */
+.sheet-scrim { position: fixed; inset: 0; background: rgba(2,6,4,.6); opacity: 0; pointer-events: none; transition: opacity var(--dur) var(--ease); z-index: 45; }
+.sheet-scrim.open { opacity: 1; pointer-events: auto; }
+
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border-strong);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  box-shadow: var(--shadow-1);
+  padding: var(--sp-6) var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform var(--dur) var(--ease);
+  z-index: 46; max-height: 80vh; overflow-y: auto;
+}
+.sheet.open { transform: translateY(0); }
+
+.filter-panel-title { font-family: var(--font-display); font-size: var(--text-md); margin: 0 0 var(--sp-5); }
+.filter-panel-inner { display: flex; flex-direction: column; gap: var(--sp-5); }
+.field { display: flex; flex-direction: column; gap: var(--sp-2); }
+.field label { font-size: var(--text-xs); color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.field select {
+  height: 48px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  padding: 0 var(--sp-3); background: var(--surface); color: var(--text);
+}
+.filter-apply { margin-top: var(--sp-2); }
+
+/* ---------- Text form fields (contact form) ---------- */
+.field input[type="text"], .field input[type="email"], .field input[type="tel"], .field textarea {
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  padding: var(--sp-3); background: var(--surface); color: var(--text); font-family: var(--font-body);
+}
+.field input[type="text"], .field input[type="email"], .field input[type="tel"] { height: 48px; }
+.field textarea { resize: vertical; min-height: 120px; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+
+.contact-form { display: flex; flex-direction: column; gap: var(--sp-5); }
+.contact-form .btn { align-self: flex-start; }
+
+/* ---------- Contact — split panel ---------- */
+.split-panel { display: flex; flex-direction: column; }
+@media (min-width: 768px) { .split-panel { flex-direction: row; min-height: 640px; } }
+.panel { flex: 1; padding: var(--sp-10) var(--sp-4); display: flex; align-items: center; }
+@media (min-width: 768px) { .panel { padding: var(--sp-16) var(--sp-10); } }
+.panel-info { background: var(--surface); border-bottom: 1px solid var(--border); }
+@media (min-width: 768px) { .panel-info { border-bottom: none; border-right: 1px solid var(--border); } }
+.panel-inner { max-width: 420px; width: 100%; margin: 0 auto; }
+.panel-info h1 { font-size: var(--text-xl); margin: var(--sp-2) 0 var(--sp-4); }
+@media (min-width: 768px) { .panel-info h1 { font-size: var(--text-2xl); } }
+.panel-info .prose { margin-bottom: var(--sp-6); }
+
+/* ---------- About — process rail ---------- */
+.rail { list-style: none; margin: 0; padding: 0; position: relative; display: flex; flex-direction: column; gap: var(--sp-8); }
+.rail::before { content: ""; position: absolute; left: 23px; top: 8px; bottom: 8px; width: 2px; background: var(--border-strong); }
+@media (min-width: 768px) { .rail::before { left: 27px; } }
+.rail-step { position: relative; display: flex; gap: var(--sp-5); align-items: flex-start; }
+.rail-node {
+  position: relative; z-index: 1; flex: none; width: 48px; height: 48px; border-radius: var(--radius-sm);
+  background: var(--surface-2); border: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: var(--accent);
+}
+@media (min-width: 768px) { .rail-node { width: 56px; height: 56px; } }
+.rail-body h3 { margin: 0 0 4px; font-size: var(--text-md); font-family: var(--font-body); font-weight: 700; color: var(--text); }
+.rail-body p { margin: 0; color: var(--text-muted); font-size: var(--text-sm); max-width: 56ch; }
+
+@media (min-width: 768px) {
+  .filter-toggle-row { display: none; }
+  .filter-scrim { display: none; }
+  /* Only the homepage filter bar becomes inline at desktop (it has an
+     always-visible desktop equivalent). The Sections sheet has no desktop
+     equivalent to fall back to — it must stay a real hidden-until-opened
+     sheet, so this rule is scoped to .filter-panel specifically, not .sheet. */
+  .filter-panel { position: static; transform: none; box-shadow: none; padding: 0; background: transparent; border: none; border-radius: 0; max-height: none; overflow: visible; margin-top: var(--sp-5); }
+  .filter-panel-title { display: none; }
+  .filter-panel-inner { flex-direction: row; align-items: flex-end; gap: var(--sp-4); }
+  .filter-panel .field { flex: 0 0 200px; }
+  .filter-apply { display: none; }
+}
+
+/* ---------- Stats ---------- */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: var(--sp-10) 0; }
+.stat-card { text-align: center; padding: var(--sp-6) var(--sp-2); border-left: 1px solid var(--border); }
+.stat-card:first-child { border-left: none; }
+.stat-card .num { font-family: var(--font-display); font-size: var(--text-xl); color: var(--accent); }
+.stat-card .label { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--sp-2); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+
+/* ---------- Section headers ---------- */
+.section-title { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 var(--sp-5); gap: var(--sp-2); }
+.section-title h2 { font-size: var(--text-lg); margin: 0; }
+.section-title .count { color: var(--text-muted); font-size: var(--text-sm); }
+
+/* ---------- Project grid ---------- */
+.grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-4); margin-bottom: var(--sp-8); }
+@media (min-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); } }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+@media (hover: hover) {
+  .card:hover { box-shadow: var(--glow-accent); border-color: var(--accent); transform: translateY(-3px); }
+}
+.card .name { font-weight: 700; font-size: var(--text-md); color: var(--text); }
+.card .promoter { color: var(--text-muted); font-size: var(--text-sm); }
+.card .meta-line { font-size: var(--text-xs); color: var(--text-faint); margin-top: var(--sp-1); }
+.card .badge-row { margin-top: var(--sp-2); }
+
+.badge { display: inline-block; font-size: var(--text-xs); font-weight: 700; padding: 3px 9px; border-radius: var(--radius-xs); background: var(--surface-2); color: var(--text-muted); }
+.badge.detail { background: var(--gold-soft); color: var(--gold-strong); }
+
+/* Skeleton loading (dark) */
+.skel { background: linear-gradient(90deg, var(--surface-2) 25%, var(--skel-highlight) 37%, var(--surface-2) 63%); background-size: 400% 100%; animation: skel-shimmer 1.4s ease infinite; border-radius: var(--radius-sm); }
+@keyframes skel-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+.skel-card { height: 132px; border-radius: var(--radius-sm); }
+.skel-line { height: 12px; margin-bottom: var(--sp-2); }
+
+/* ---------- Pagination ---------- */
+.pagination { display: flex; justify-content: center; align-items: center; gap: var(--sp-2); margin: var(--sp-8) 0 var(--sp-12); flex-wrap: wrap; }
+.pagination button {
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+  min-width: 44px; height: 44px; padding: 0 var(--sp-2); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-sm); font-weight: 600;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.pagination button.active { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+.pagination button:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ---------- Footer ---------- */
+footer.site-footer { background: var(--surface); border-top: 1px solid var(--border); color: var(--text-faint); padding: var(--sp-6) 0; font-size: var(--text-xs); text-align: center; }
+.site-footer .footer-nav { display: flex; justify-content: center; gap: var(--sp-5); flex-wrap: wrap; margin-bottom: var(--sp-3); }
+.site-footer .footer-nav a { color: var(--text-muted); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
+.site-footer .footer-nav a:hover { color: var(--accent); }
+
+/* ---------- Bottom nav ---------- */
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: var(--surface); border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -8px 24px -12px rgba(0,0,0,.6);
+  display: flex; z-index: 35; padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.bn-item {
+  flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  height: var(--bottom-nav-h); background: none; border: none; color: var(--text-muted);
+  font-size: 11px; font-weight: 700; cursor: pointer;
+}
+.bn-item .icon-wrap { width: 34px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: background var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.bn-item[aria-current="true"] { color: var(--accent); }
+.bn-item[aria-current="true"] .icon-wrap { background: var(--surface-2); box-shadow: var(--glow-accent); }
+@media (min-width: 1024px) { .bottom-nav { display: none; } }
+
+/* ---------- Detail page ---------- */
+.breadcrumb { font-size: var(--text-xs); color: var(--text-faint); margin: var(--sp-5) 0; }
+.breadcrumb a { color: var(--accent); }
+
+/* ---------- Showcase hero (Overview tab) — real photography, not a text-only masthead ---------- */
+.showcase-shell { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+
+.showcase-hero { position: relative; min-height: 380px; display: flex; align-items: flex-end; overflow: hidden; scroll-margin-top: 130px; background: var(--surface-2); }
+@media (min-width: 768px) { .showcase-hero { min-height: 480px; } }
+.showcase-hero .hero-img { position: absolute; inset: 0; z-index: 0; }
+/* Full opacity — the photo should read at full color. Fading it here used
+   to blend it with .showcase-hero's own background (var(--surface-2)),
+   which is theme-dependent (pale lavender on Arctic Violet) and washed the
+   whole image toward a dull pastel haze on top of the scrim below. All
+   contrast work for the text happens in .scrim instead, which stays a
+   fixed dark gradient in every theme. Brochure/builder photography here
+   is frequently a hazy dawn/dusk shot straight off the source PDF — the
+   filter gives it some of the punch a real photo shoot would have without
+   moving it off "real photography, not a graphic". */
+.showcase-hero .hero-img img { object-fit: cover; filter: saturate(1.2) contrast(1.1) brightness(.96); }
+.showcase-hero .scrim {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(0deg, rgba(6,14,11,.94) 0%, rgba(6,14,11,.78) 30%, rgba(6,14,11,.4) 58%, rgba(6,14,11,.15) 100%);
+}
+.showcase-hero .content {
+  position: relative; z-index: 2; padding: var(--sp-6) var(--sp-4) var(--sp-5); width: 100%;
+  /* The scrim behind this content is a fixed dark gradient regardless of
+     site theme (it sits over a photo, not a themed surface) — pin the text
+     tokens to their light-on-dark values here so Arctic Violet's dark
+     --text/--border-strong don't go invisible against it. Re-declaring
+     `color` (not just the variable) re-anchors inheritance for h1/.tagline,
+     which set no color of their own. */
+  --text: #f5f5f5;
+  --text-muted: #c9c5d9;
+  --border-strong: rgba(245, 245, 245, .35);
+  color: var(--text);
+}
+@media (min-width: 768px) { .showcase-hero .content { padding: var(--sp-8) var(--sp-6) var(--sp-6); } }
+
+.showcase-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--gold-soft); color: var(--gold-strong); border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-xs); padding: 4px 10px; font-size: var(--text-xs); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; margin-bottom: var(--sp-4);
+}
+.showcase-badge::before { content: "✓"; }
+
+.showcase-hero h1 { font-size: var(--text-xl); line-height: 1.1; margin: 0 0 var(--sp-2); }
+@media (min-width: 768px) { .showcase-hero h1 { font-size: var(--text-2xl); } }
+.showcase-hero .loc { color: var(--text-muted); font-size: var(--text-sm); margin-bottom: 4px; }
+.showcase-hero .tagline { font-weight: 700; font-size: var(--text-md); margin-bottom: var(--sp-5); }
+
+/* Base .fact k/v — used by the <Fact> primitive everywhere it's rendered (showcase hero, legal regfacts). */
+.fact .k { color: var(--text-muted); display: block; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+.fact .v { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+
+.showcase-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 0; border-top: 1px solid var(--border-strong); padding-top: var(--sp-4); }
+.showcase-facts .fact { flex: 0 1 auto; padding: 0 var(--sp-5) 0 0; margin-right: var(--sp-5); border-right: 1px solid var(--border-strong); }
+.showcase-facts .fact:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+
+.showcase-cta {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: var(--sp-5);
+  /* Mono + Pop already defines --gold-strong: #fff for dark surfaces — reuse
+     that value here since this caption sits on the hero's dark scrim in
+     every theme (see .showcase-hero .content above). */
+  --gold-strong: #ffffff;
+}
+@media (min-width: 600px) { .showcase-cta { margin-top: 0; margin-left: auto; align-items: flex-end; } .showcase-facts { position: relative; } }
+.showcase-cta .btns { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+.showcase-cta .note { font-size: var(--text-xs); color: var(--gold-strong); }
+
+.showcase-highlights { display: flex; flex-wrap: wrap; background: var(--surface); border-top: 1px solid var(--border); }
+.showcase-highlights .h {
+  flex: 1 1 200px; padding: var(--sp-4) var(--sp-5); border-right: 1px solid var(--border);
+  font-size: var(--text-sm); font-weight: 700; display: flex; align-items: center; gap: var(--sp-2);
+}
+.showcase-highlights .h:last-child { border-right: none; }
+.showcase-highlights .h::before { content: "✦"; color: var(--gold); flex: none; }
+
+/* ---------- Overview / Legal Data tab shell (CSS-only, no client JS) ---------- */
+/* These two inputs sit right before .container, near the very top of the
+   page, so the "~" sibling selectors below can reach both the tab panels and
+   the bottom-nav labels regardless of where in the DOM their own <label
+   for="..."> lives. Clicking a label focuses its input — with `position:
+   absolute` that focus target sits up near the hero, so the browser's
+   scroll-into-view-on-focus jumped the whole page back to the top on every
+   tab switch. `position: fixed` at the viewport corner keeps the input
+   permanently "in view" regardless of scroll position, so focusing it never
+   triggers a scroll. */
+.tab-radio { position: fixed; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; padding: 0; margin: -1px; }
+
+.detail-tabs {
+  display: flex; gap: var(--sp-2); position: sticky; top: 60px; z-index: 25;
+  background: var(--bg); border-bottom: 1px solid var(--border); margin-bottom: var(--sp-6);
+}
+.detail-tabs label {
+  padding: var(--sp-4) var(--sp-2); font-size: var(--text-sm); font-weight: 700; color: var(--text-muted);
+  cursor: pointer; border-bottom: 2px solid transparent; transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.detail-tabs label:hover { color: var(--text); }
+.tab-panel { display: none; }
+#tab-overview:checked ~ .container .tab-panel-overview { display: block; }
+#tab-legal:checked ~ .container .tab-panel-legal { display: block; }
+#tab-overview:checked ~ .container .detail-tabs label[for="tab-overview"] { color: var(--accent); border-color: var(--accent); }
+#tab-legal:checked ~ .container .detail-tabs label[for="tab-legal"] { color: var(--gold); border-color: var(--gold); }
+#tab-overview:checked ~ nav.bottom-nav label[for="tab-overview"],
+#tab-legal:checked ~ nav.bottom-nav label[for="tab-legal"] { color: var(--accent); }
+#tab-overview:checked ~ nav.bottom-nav label[for="tab-overview"] .icon-wrap,
+#tab-legal:checked ~ nav.bottom-nav label[for="tab-legal"] .icon-wrap { background: var(--surface-2); box-shadow: var(--glow-accent); }
+
+/* ---------- Overview: showcase section rhythm (one continuous shell, no boxed cards) ---------- */
+.showcase-content { display: flex; flex-direction: column; }
+.showcase-section { padding: var(--sp-8) var(--sp-4); border-top: 1px solid var(--border); scroll-margin-top: 130px; }
+@media (min-width: 768px) { .showcase-section { padding: var(--sp-10) var(--sp-6); } }
+.showcase-eyebrow { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: var(--sp-2); }
+.showcase-section h2 { font-size: var(--text-lg); margin: 0 0 var(--sp-5); display: flex; align-items: baseline; gap: var(--sp-2); flex-wrap: wrap; }
+.showcase-section h2 .n { font-family: var(--font-body); font-size: var(--text-xs); color: var(--text-faint); font-weight: 400; }
+
+/* Gallery — curated teaser (big + 2 small) then a zero-JS <details> reveal for the rest */
+.gallery-teaser { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 1fr; gap: var(--sp-2); height: 320px; }
+.gallery-teaser .g { position: relative; overflow: hidden; border-radius: var(--radius-xs); background: var(--surface-2); }
+.gallery-teaser .g img { object-fit: cover; }
+.gallery-teaser .g.big { grid-row: 1 / 3; }
+.gallery-teaser .g .zoomable { position: absolute; inset: 0; }
+.gallery-teaser .g .cap {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  font-size: var(--text-xs); color: #fff; background: linear-gradient(0deg, rgba(0,0,0,.75), transparent);
+  pointer-events: none;
+}
+.gallery-more { margin-top: var(--sp-4); }
+.gallery-more > summary { list-style: none; cursor: pointer; color: var(--accent); font-size: var(--text-sm); font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
+.gallery-more > summary::-webkit-details-marker { display: none; }
+.gallery-more > summary:hover { color: var(--accent-strong); }
+.gallery-more[open] > summary { margin-bottom: var(--sp-4); }
+.gallery-more .media-grid { margin-top: 0; }
+
+/* Amenities — grouped columns (variable count, per project) with an access-tier badge, not a fixed synthetic taxonomy */
+.amenity-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+.amenity-groups .subsection { padding: var(--sp-4) var(--sp-5); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 0; }
+.amenity-groups .subsection + .subsection { border-top: none; padding-top: var(--sp-4); }
+.badge.tier { text-transform: none; letter-spacing: 0; margin-left: var(--sp-2); background: var(--gold-soft); color: var(--gold-strong); }
+
+/* ---------- Legal Data tab ---------- */
+.legal-head { margin-bottom: var(--sp-6); }
+.legal-head .showcase-eyebrow { color: var(--gold); }
+.legal-head h2 { font-size: var(--text-lg); margin: 0 0 var(--sp-2); }
+.legal-head p { color: var(--text-muted); font-size: var(--text-sm); max-width: 60ch; margin: 0 0 var(--sp-5); }
+.legal-regfacts { display: flex; flex-direction: column; gap: var(--sp-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-4); max-width: 420px; }
+.legal-regfacts .row { display: flex; justify-content: space-between; gap: var(--sp-3); font-size: var(--text-sm); padding: var(--sp-1) 0; }
+.legal-regfacts .row .k { color: var(--text-muted); }
+.legal-regfacts .row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.section-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-5); margin-bottom: var(--sp-5); scroll-margin-top: 130px; }
+@media (min-width: 768px) { .section-block { padding: var(--sp-6); } }
+.section-block > h2 { margin: 0 0 var(--sp-4); font-size: var(--text-lg); display: flex; align-items: baseline; gap: var(--sp-2); }
+.section-block > h2 .n { font-family: var(--font-body); font-size: var(--text-xs); color: var(--text-faint); font-weight: 400; }
+
+/* Sub-blocks inside a merged section (e.g. the 3 bank accounts, the 4 land/legal records) */
+.subsection + .subsection { margin-top: var(--sp-6); padding-top: var(--sp-6); border-top: 1px solid var(--border); }
+.subhead { font-size: var(--text-sm); font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 var(--sp-3); }
+
+/* ---------- Responsive data table -> card list (CSS-only, single markup) ---------- */
+.ptable-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.ptable-head { display: none; }
+.ptable-row { display: block; padding: var(--sp-4); border-bottom: 1px solid var(--border); }
+.ptable-row:last-child { border-bottom: none; }
+.ptable-row .ptable-title { font-weight: 700; font-size: var(--text-sm); color: var(--text); margin-bottom: var(--sp-2); overflow-wrap: anywhere; }
+.ptable-row .cell {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1) var(--sp-3);
+  padding: 4px 0; font-size: var(--text-sm); color: var(--text);
+  border-bottom: 1px dashed var(--border);
+}
+.ptable-row .cell:last-child { border-bottom: none; }
+.ptable-row .cell::before { content: attr(data-label); color: var(--text-muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .03em; flex: 1 1 auto; max-width: 55%; overflow-wrap: anywhere; }
+.ptable-row .cell .cell-value { flex: 1 1 auto; min-width: 0; max-width: 100%; overflow-wrap: anywhere; text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (min-width: 768px) {
+  /* Horizontal scroll only — a wide table (13 columns) has no way around
+     that, but a *tall* one (376 rows) should just be part of the normal
+     page scroll, not trapped in its own vertical-scroll box (that "scroll
+     within a scroll" pattern is a known usability complaint: it captures
+     mouse-wheel/trackpad input and forces the cursor outside the box to
+     keep scrolling the page). The header row stays sticky to the page's
+     scroll instead, offset below the fixed site header + jump-nav. */
+  .ptable-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Not sticky: an element can't have overflow-x:auto (needed below for the
+     horizontal scroll) while overflow-y stays truly visible — the browser
+     computes overflow-y to auto regardless (same root cause as the earlier
+     body/sticky-header bug), and that breaks position:sticky for this
+     header. Confirmed by testing: it detached and scrolled off-screen
+     instead of pinning. A table header can be sticky-to-page OR the row
+     area can scroll horizontally — not both in one container — and the
+     horizontal scroll is the one that's actually load-bearing here (13
+     columns don't fit any viewport), so this stays in normal flow. */
+  .ptable-head { display: grid; grid-template-columns: var(--ptable-cols, none); background: var(--surface-2); }
+  /* Header labels can be much longer than a data value ("Flat/ Apartment/
+     Shop/Plot type" vs "4 BHK") — wrap them instead of nowrap, or long
+     labels overflow their 110px column and overlap the next header. */
+  .ptable-head > div { padding: var(--sp-3); font-size: var(--text-xs); font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+  .ptable-row { display: grid; grid-template-columns: var(--ptable-cols, none); padding: 0; }
+  .ptable-row .ptable-title { display: none; }
+  /* Most values are short (numbers, "4 BHK") and nowrap keeps them tidy, but
+     some fields are full sentences (e.g. a land-document "Number" field) —
+     overflow-wrap:anywhere on .cell-value only works when wrapping is
+     allowed at all, so this can't be a blanket nowrap or long values bleed
+     into the next column exactly like the header bug above. */
+  .ptable-row .cell { display: block; padding: var(--sp-3); border-bottom: none; white-space: nowrap; overflow: hidden; }
+  .ptable-row .cell::before { content: none; }
+  .ptable-row .cell .cell-value { text-align: left; white-space: normal; overflow-wrap: anywhere; }
+}
+
+.kv-list { display: flex; flex-direction: column; gap: var(--sp-3); font-size: var(--text-sm); }
+.kv-list .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1) var(--sp-3); border-bottom: 1px dashed var(--border); padding-bottom: var(--sp-3); }
+.kv-list .row .k { color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex: 0 1 auto; }
+.kv-list .row .v { text-align: right; font-weight: 700; color: var(--text); min-width: 0; overflow-wrap: anywhere; flex: 1 1 auto; font-variant-numeric: tabular-nums; }
+
+.doc-list { display: flex; flex-direction: column; }
+.doc-item { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); font-size: var(--text-sm); }
+.doc-item:last-child { border-bottom: none; }
+.doc-item .doc-icon { flex: none; width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--surface-2); color: var(--accent); display: flex; align-items: center; justify-content: center; }
+.doc-item .doc-info { flex: 1 1 auto; min-width: 0; }
+.doc-item .doc-name { font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+.doc-item .doc-sub { color: var(--text-faint); font-size: var(--text-xs); margin-top: 2px; overflow-wrap: anywhere; }
+.doc-actions { flex: none; display: flex; gap: var(--sp-4); }
+.doc-actions a { font-size: var(--text-sm); font-weight: 700; color: var(--accent); min-height: 44px; display: inline-flex; align-items: center; gap: 4px; transition: color var(--dur-fast) var(--ease); }
+.doc-actions a:hover { color: var(--accent-strong); }
+
+.empty-state { text-align: center; padding: var(--sp-12) var(--sp-4); color: var(--text-faint); }
+.empty-state .icon { width: 32px; height: 32px; margin: 0 auto var(--sp-3); color: var(--text-faint); }
+.notice { background: var(--surface-2); color: var(--text-muted); border-radius: var(--radius-sm); padding: var(--sp-4); font-size: var(--text-sm); margin-bottom: var(--sp-5); border: 1px solid var(--border-strong); display: flex; gap: var(--sp-3); align-items: flex-start; }
+.notice .icon { color: var(--gold); margin-top: 1px; }
+.loading { text-align: center; padding: var(--sp-12); color: var(--text-faint); }
+
+/* ============================================================
+   Configurations & Floor Plans (content section registry)
+   ============================================================ */
+
+/* Comparison table — every unit visible at once, one <details> per row.
+   Reuses .ptable-* (see the Land & Legal / Unit Inventory tables in
+   ReraSections) so the same CSS grid-on-desktop / card-on-mobile mechanism
+   applies here with no new responsive logic. */
+.cfg-table .cell-value.price { color: var(--gold-strong); font-weight: 800; }
+
+.cfg-row { border-bottom: 1px solid var(--border); }
+.cfg-row:last-child { border-bottom: none; }
+.cfg-row > summary { list-style: none; cursor: pointer; padding: var(--sp-4); }
+.cfg-row > summary::-webkit-details-marker { display: none; }
+.cfg-row > summary::marker { content: ""; }
+.cfg-row > summary:hover { background: var(--surface-2); }
+.cfg-row > summary .chev {
+  display: block; margin: var(--sp-2) auto 0; color: var(--text-faint);
+  transform: rotate(180deg); transition: transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.cfg-row[open] > summary .chev { transform: rotate(0deg); color: var(--accent); }
+@media (min-width: 768px) {
+  .cfg-row > summary { display: grid; grid-template-columns: var(--ptable-cols, none); align-items: center; padding: var(--sp-3); }
+  .cfg-row > summary .chev { margin: 0; justify-self: center; }
+}
+
+.cfg-row-expand {
+  padding: var(--sp-5) var(--sp-4) var(--sp-6); border-top: 1px dashed var(--border); background: var(--surface-2);
+  display: flex; flex-direction: column; gap: var(--sp-6);
+}
+@media (min-width: 768px) { .cfg-row-expand { padding: var(--sp-6); } }
+@media (min-width: 640px) {
+  .cfg-row-expand { flex-direction: row; align-items: flex-start; }
+  .cfg-row-expand .plan-viewer { flex: 1 1 55%; min-width: 0; }
+  .cfg-row-expand .cfg-row-facts { flex: 1 1 40%; min-width: 0; }
+}
+
+/* Click-to-zoom (ZoomableImage) — used on every content image: gallery,
+   master plan, location map, clubhouse photos, unit floor plans. */
+.zoomable { display: block; width: 100%; border: none; background: none; padding: 0; margin: 0; cursor: zoom-in; position: relative; text-align: left; }
+/* Belt-and-suspenders on top of the img `draggable={false}` prop: a native
+   browser image-drag start (mousedown + the smallest move) swallows the
+   click that should have opened the viewer — this is the actual fix for
+   "clicking the image doesn't always open it." */
+.zoomable img { -webkit-user-drag: none; user-select: none; }
+.zoomable .zoom-hint {
+  position: absolute; top: var(--sp-2); right: var(--sp-2); width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(8, 20, 16, .8); color: var(--text); border: 1px solid var(--border-strong); border-radius: var(--radius-xs);
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease);
+}
+@media (hover: hover) { .zoomable:hover .zoom-hint { opacity: 1; } }
+@media (hover: none) { .zoomable .zoom-hint { opacity: 1; } }
+
+/* The fullscreen viewer — zoom in/out (buttons, wheel, pinch), pan once
+   zoomed, double-click to toggle. No transition on .zoom-img: a drag or
+   pinch needs to track the pointer 1:1, not ease behind it. */
+.zoom-overlay {
+  position: fixed; inset: 0; z-index: 60; background: rgba(4, 10, 8, .93);
+  display: flex; align-items: center; justify-content: center; padding: var(--sp-6);
+  overflow: hidden; touch-action: none; cursor: zoom-out;
+}
+.zoom-img { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.zoom-close {
+  position: fixed; top: var(--sp-5); right: var(--sp-5); width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border-strong); color: var(--text); cursor: pointer; z-index: 61;
+}
+.zoom-close:hover { border-color: var(--accent); color: var(--accent); }
+
+.zoom-toolbar {
+  position: fixed; left: 50%; bottom: var(--sp-6); transform: translateX(-50%); z-index: 61;
+  display: flex; align-items: center; gap: var(--sp-2);
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  padding: var(--sp-2); box-shadow: var(--shadow-1);
+}
+.zoom-toolbar button {
+  width: 40px; height: 40px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text);
+  font-family: var(--font-display); font-size: var(--text-lg); line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.zoom-toolbar button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.zoom-toolbar button:disabled { opacity: .35; cursor: not-allowed; }
+.zoom-toolbar .zoom-pct { min-width: 48px; text-align: center; font-size: var(--text-sm); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text-muted); }
+.zoom-toolbar .zoom-reset { width: auto; padding: 0 var(--sp-3); font-family: var(--font-body); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+
+/* Gallery-only: prev/next paging and a position counter. */
+.zoom-nav {
+  position: fixed; top: 50%; transform: translateY(-50%); z-index: 61;
+  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border-strong); color: var(--text); cursor: pointer;
+}
+.zoom-nav:hover { border-color: var(--accent); color: var(--accent); }
+.zoom-prev { left: var(--sp-5); }
+.zoom-next { right: var(--sp-5); }
+@media (max-width: 600px) { .zoom-prev { left: var(--sp-2); } .zoom-next { right: var(--sp-2); } }
+.zoom-counter {
+  position: fixed; top: var(--sp-5); left: 50%; transform: translateX(-50%); z-index: 61;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-4); font-size: var(--text-sm); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text-muted);
+}
+
+/* 2D / 3D switch — a segmented control, not an accordion: it swaps two views
+   of the same unit rather than hiding distinct content. */
+.plan-view-toggle {
+  display: inline-flex; gap: 2px; padding: 2px; margin-bottom: var(--sp-3);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface-2);
+}
+.plan-view-btn {
+  border: none; background: transparent; cursor: pointer;
+  color: var(--text-muted); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 700;
+  padding: 0 var(--sp-4); min-height: 34px; border-radius: var(--radius-xs);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.plan-view-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-on); }
+/* A view with no asset yet stays reachable but reads as empty. */
+.plan-view-btn[data-empty="true"] { color: var(--text-faint); }
+.plan-view-btn[data-empty="true"][aria-pressed="true"] { background: var(--border); color: var(--text-muted); }
+
+.plan-figure { margin: 0; background: var(--plan-plate); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-3); }
+.plan-figure img { display: block; width: 100%; height: auto; }
+.plan-figure figcaption { margin-top: var(--sp-3); font-size: var(--text-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); text-align: center; }
+
+.plan-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3);
+  min-height: 240px; padding: var(--sp-8) var(--sp-4); text-align: center;
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-sm);
+  color: var(--text-faint); font-size: var(--text-sm);
+}
+.plan-empty .icon { width: 30px; height: 30px; }
+
+.plan-tour { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--text-sm); font-weight: 700; color: var(--accent); }
+.plan-tour:hover { color: var(--accent-strong); }
+
+.unit-tag { display: inline-block; margin-top: var(--sp-4); padding: 3px 9px; border-radius: var(--radius-xs); background: var(--surface-2); border: 1px solid var(--border-strong); color: var(--text-muted); font-size: var(--text-xs); font-weight: 700; }
+
+/* Surfaced, not buried: this is a source-quality warning about the numbers
+   directly above it. */
+.unit-note { display: flex; gap: var(--sp-2); margin: var(--sp-4) 0 0; padding: var(--sp-3); font-size: var(--text-xs); line-height: 1.5; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); }
+.unit-note .icon { flex: none; color: var(--text-faint); }
+
+/* ---- Primitive renderers for data-defined custom_sections ---- */
+
+.stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.stat-cell { padding: var(--sp-5) var(--sp-2); text-align: center; border-left: 1px solid var(--border); }
+.stat-cell:first-child { border-left: none; }
+.stat-cell .num { display: block; font-family: var(--font-display); font-size: var(--text-xl); color: var(--accent); font-variant-numeric: tabular-nums; }
+.stat-cell .label { display: block; margin-top: var(--sp-2); font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+
+.tag-list { display: flex; flex-wrap: wrap; gap: var(--sp-2); list-style: none; margin: 0; padding: 0; }
+.tag-list li { padding: 6px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-xs); background: var(--surface-2); color: var(--text-muted); font-size: var(--text-sm); }
+
+.mini-cards { display: grid; grid-template-columns: 1fr; gap: var(--sp-4); }
+@media (min-width: 600px) { .mini-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .mini-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.mini-card { min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); overflow: hidden; }
+.mini-card img { display: block; width: 100%; height: 170px; object-fit: cover; }
+.mini-card-body { padding: var(--sp-4); }
+.mini-card-title { font-weight: 700; font-size: var(--text-sm); color: var(--text); overflow-wrap: anywhere; }
+.mini-card-body p { margin: var(--sp-2) 0 0; font-size: var(--text-sm); color: var(--text-muted); }
+
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-3); }
+.media-grid figure { margin: 0; min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-2); }
+.media-grid img { display: block; width: 100%; height: 170px; object-fit: cover; }
+.media-grid figcaption { padding: var(--sp-3); font-size: var(--text-xs); color: var(--text-faint); }
+
+.prose { margin: 0; font-size: var(--text-sm); line-height: 1.65; color: var(--text-muted); max-width: 68ch; }
+
+/* ============================================================
+   Next.js port — server-rendered variants of previously JS-built markup.
+   Same visual language; different elements (links instead of buttons,
+   a native <details> instead of a scripted sheet).
+   ============================================================ */
+
+/* Quick-filter chips on the homepage are links now, not buttons. */
+a.chip-toggle { display: inline-flex; align-items: center; text-decoration: none; }
+a.chip-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Listing filter form. Stacked on mobile, one inline row from md up —
+   the same shape the sheet used to collapse to, minus the sheet. */
+.filter-bar { display: flex; flex-direction: column; gap: var(--sp-4); margin-top: var(--sp-5); }
+@media (min-width: 768px) {
+  .filter-bar { flex-direction: row; align-items: flex-end; gap: var(--sp-4); }
+  .filter-bar .field { flex: 0 0 210px; }
+  .filter-bar .filter-apply { flex: none; }
+}
+
+/* Pagination is anchors so crawlers can walk the catalogue. */
+.pagination a, .pagination .pg-disabled, .pagination .pg-gap {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+  min-width: 44px; height: 44px; padding: 0 var(--sp-3); border-radius: var(--radius-sm);
+  font-size: var(--text-sm); font-weight: 600; font-variant-numeric: tabular-nums;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.pagination a:hover { border-color: var(--accent); color: var(--accent); }
+.pagination a.active { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+.pagination .pg-disabled { opacity: .35; }
+.pagination .pg-gap { border-color: transparent; background: transparent; color: var(--text-faint); min-width: 24px; padding: 0; }
+
+.plan-pane { min-width: 0; }
+
+/* ============================================================
+   Homepage
+   ============================================================ */
+
+/* Trust strip — reuses .showcase-highlights (the detail page's
+   marketing.highlights bar) as a standalone block instead of nested inside
+   a .showcase-shell, so it needs its own bottom border + radius. */
+.trust-bar { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: var(--sp-8); }
+
+/* Icon wrap for a text-only .mini-card (no image) used by the "why us"
+   emotion/trust cards below the hero. */
+.feature-icon {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); background: rgba(52, 211, 153, .12); color: var(--accent);
+  margin-bottom: var(--sp-4);
+}
+.feature-icon .icon { width: 22px; height: 22px; }
+.mini-card .mini-card-body p.feature-body { margin-top: var(--sp-1); }
+
+/* Closing CTA banner */
+.cta-banner { position: relative; overflow: hidden; border-top: 1px solid var(--border); background: var(--surface); padding: var(--sp-16) 0; text-align: center; }
+.cta-banner::before {
+  content: ""; position: absolute; inset: -20% -10% auto -10%; height: 400px;
+  background: radial-gradient(50% 50% at 50% 20%, var(--ambient-2), rgba(0,0,0,0) 70%);
+  pointer-events: none;
+}
+.cta-banner .container { position: relative; }
+.cta-banner h2 { font-size: var(--text-lg); margin: 0 0 var(--sp-3); }
+@media (min-width: 768px) { .cta-banner h2 { font-size: var(--text-xl); } }
+.cta-banner p { color: var(--text-muted); max-width: 52ch; margin: 0 auto var(--sp-6); }
+.cta-banner .btns { display: flex; gap: var(--sp-3); justify-content: center; flex-wrap: wrap; }
