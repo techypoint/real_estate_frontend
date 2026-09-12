@@ -11,3 +11,6 @@ next-env.d.ts
 *.tsbuildinfo
 npm-debug.log*
 .DS_Store
+
+# run.sh runtime artifact — per-machine, not source
+frontend.log
