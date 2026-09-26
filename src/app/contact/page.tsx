@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-const EMAIL = "varun.bisht8@gmail.com";
+const EMAIL = "founder@acreinfotech.com";
 const PHONE_DISPLAY = "+91 84472 54377";
 const PHONE_TEL = "+918447254377";
 const WHATSAPP_URL = "https://wa.me/918447254377";
