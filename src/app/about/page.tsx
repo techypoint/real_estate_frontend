@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "AcreInfotech helps you find the right home — an independent directory of real estate projects, checked against official RERA records, with you all the way from search to keys.",
+    "AcreInfotech helps you find the right home — an independent directory of real estate projects showing the details each promoter filed with UP-RERA, with you all the way from search to keys.",
   alternates: { canonical: "/about" },
 };
 
@@ -40,7 +40,8 @@ export default async function AboutPage() {
           <h1 className="rise-in rise-in-1">About AcreInfotech</h1>
           <p className="rise-in rise-in-2">
             We help you find the right home — an independent directory of real estate projects,
-            checked against official RERA records so you can research with confidence before you buy.
+            showing the details each promoter filed with UP-RERA so you know what the public
+            record actually says before you buy.
           </p>
         </div>
       </section>
@@ -49,11 +50,13 @@ export default async function AboutPage() {
         <div className="showcase-content">
           <section className="showcase-section">
             <div className="showcase-eyebrow">Why we exist</div>
-            <h2>Not the builder&rsquo;s version. The real one.</h2>
+            <h2>Straight from the public record.</h2>
             <p className="prose">
-              Most listings are copy-pasted from a brochure. We source every project from its official RERA
-              filing &mdash; promoter details, bank accounts, land records, sanctioned dates &mdash; before it
-              ever reaches you.
+              Most listings are copy-pasted from a brochure. We take ours from the public UP-RERA
+              portal instead &mdash; promoter details, bank accounts, land records, sanctioned dates
+              &mdash; and publish them as the promoter filed them. We don&rsquo;t verify those
+              filings and we don&rsquo;t rewrite them: what you see is what is on the register, so
+              you can take it to the promoter and to up-rera.in and check it yourself.
             </p>
           </section>
 

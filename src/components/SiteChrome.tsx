@@ -29,6 +29,7 @@ export function SiteHeader() {
           <nav>
             <Link href="/">Home</Link>
             <Link href="/projects">Browse</Link>
+            <Link href="/blog">Blog</Link>
             <Link href="/about">About</Link>
             <Link href="/contact">Contact</Link>
           </nav>
@@ -46,10 +47,10 @@ export function SiteFooter() {
         <nav className="footer-nav" aria-label="Footer">
           <Link href="/">Home</Link>
           <Link href="/projects">Browse</Link>
+          <Link href="/blog">Blog</Link>
           <Link href="/about">About Us</Link>
           <Link href="/contact">Contact Us</Link>
         </nav>
-        AcreInfotech is an independent directory, not an official RERA service. Data sourced from up-rera.in.
       </div>
     </footer>
   );

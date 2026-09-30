@@ -10,7 +10,12 @@
  * that malformed minority.
  */
 
-function slugify(input: string): string {
+/**
+ * Lowercase, ASCII, hyphen-separated. Exported because heading anchors in
+ * rendered article bodies need exactly this (see lib/markdown.ts) and a second
+ * near-identical implementation would eventually disagree with this one.
+ */
+export function slugify(input: string): string {
   return input
     .normalize("NFKD")
     .replace(/\p{M}/gu, "") // strip diacritics (e.g. "é" -> "e") left behind by NFKD

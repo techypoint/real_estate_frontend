@@ -19,6 +19,11 @@ import { projectSlug } from "@/lib/slug";
  * registration number the webhook receives — so this looks the project back
  * up (after invalidating its cache tag, in case the name itself just
  * changed) to know which path to regenerate.
+ *
+ * The content pipeline's Publisher step (agentic_ai_workflow, see
+ * SOCIAL_CONTENT_PIPELINE.md there) calls the same endpoint for a new blog
+ * post, just with `?type=blog&slug=...` instead — blog slugs are already
+ * final at write time, so there's no name-lookup step to redo.
  */
 export async function POST(request: Request) {
   const secret = process.env.REVALIDATE_SECRET;
@@ -29,7 +34,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const reg = new URL(request.url).searchParams.get("reg");
+  const url = new URL(request.url);
+  const type = url.searchParams.get("type") ?? "project";
+
+  if (type === "blog") {
+    const slug = url.searchParams.get("slug");
+    if (!slug) {
+      return NextResponse.json({ error: "Missing ?slug=" }, { status: 400 });
+    }
+    revalidateTag(`blog:${slug}`);
+    revalidateTag("blogs");
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath("/blog");
+    revalidatePath("/");
+    return NextResponse.json({ revalidated: true, type: "blog", slug, at: Date.now() });
+  }
+
+  const reg = url.searchParams.get("reg");
   if (!reg) {
     return NextResponse.json({ error: "Missing ?reg=" }, { status: 400 });
   }
@@ -52,5 +73,5 @@ export async function POST(request: Request) {
   revalidatePath("/projects");
   revalidatePath("/");
 
-  return NextResponse.json({ revalidated: true, reg, slug, at: Date.now() });
+  return NextResponse.json({ revalidated: true, type: "project", reg, slug, at: Date.now() });
 }
