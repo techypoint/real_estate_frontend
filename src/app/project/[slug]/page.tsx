@@ -9,6 +9,7 @@ import { buildReraSections } from "@/components/sections/ReraSections";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
 import { SourceNote } from "@/components/SourceNote";
+import { ProjectEnquiry } from "@/components/ProjectEnquiry";
 import { RERA_BADGE_LABEL } from "@/lib/copy";
 import type { Project } from "@/lib/types";
 import { projectSlug, regFromSlug } from "@/lib/slug";
@@ -219,10 +220,9 @@ export default async function ProjectPage({ params }: { params: Params }) {
             <Fact k="Land parcel" v={fmtMeasure(c?.scale?.land_area)} />
             <div className="showcase-cta">
               <div className="btns">
-                <button className="btn btn-outline" type="button">Download Brochure</button>
-                <button className="btn btn-primary" type="button">Enquire Now</button>
+                <button className="btn btn-outline" type="button" disabled title="Coming soon">Download Brochure</button>
+                <ProjectEnquiry registrationNo={project.registration_no} projectName={displayName} />
               </div>
-              <span className="note">Not wired yet — no brochure file or lead endpoint exists</span>
             </div>
           </div>
         </div>
