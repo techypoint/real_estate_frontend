@@ -931,10 +931,12 @@ footer.site-footer { background: var(--surface); border-top: 1px solid var(--bor
   }
 }
 
-/* ---- Article head ---- */
+/* ---- Article head ----
+   Deliberately smaller than .hero h1 / .panel-info h1: those are page heroes,
+   this is a headline sitting above body copy and shouldn't compete with it. */
 .article-head { margin-bottom: var(--sp-6); }
-.article-head h1 { font-size: var(--text-xl); line-height: 1.15; margin: 0 0 var(--sp-4); max-width: 30ch; }
-@media (min-width: 768px) { .article-head h1 { font-size: var(--text-2xl); } }
+.article-head h1 { font-size: var(--text-lg); line-height: 1.2; margin: 0 0 var(--sp-4); max-width: 30ch; }
+@media (min-width: 768px) { .article-head h1 { font-size: var(--text-xl); } }
 
 /* The deck (standfirst) — one size up from body, muted, so it reads as a
    summary of the piece rather than its first paragraph. */

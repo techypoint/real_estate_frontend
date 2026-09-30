@@ -246,10 +246,6 @@ export default async function ProjectPage({ params }: { params: Params }) {
         </div>
       )}
 
-      {/* Inside the shell but OUTSIDE the tab panels, so the caveat is on screen
-          for every project — detailed or listing-only — and on both the Overview
-          and Legal Data tabs, without rendering two copies on the same page. */}
-      <SourceNote style={{ margin: "var(--sp-5)" }} />
     </div>
   );
 
@@ -326,6 +322,12 @@ export default async function ProjectPage({ params }: { params: Params }) {
         ) : (
           overviewSections
         )}
+
+        {/* After both tab panels rather than in the hero, so the caveat reads as
+            a footnote on the way out instead of the first thing on screen. Still
+            outside the tab-radio panels, so it's on screen for either tab
+            without rendering two copies. */}
+        <SourceNote style={{ marginTop: "var(--sp-5)" }} />
       </div>
 
       {hasLegalTab ? (

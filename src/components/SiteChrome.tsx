@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Icon } from "./IconSprite";
 import { ThemeToggle } from "./ThemeToggle";
-import { DATA_SOURCE_DISCLAIMER } from "@/lib/copy";
 
 /** Server Components — pure markup, zero client JS. */
 
@@ -52,8 +51,6 @@ export function SiteFooter() {
           <Link href="/about">About Us</Link>
           <Link href="/contact">Contact Us</Link>
         </nav>
-        AcreInfotech is an independent directory, not an official RERA service.{" "}
-        {DATA_SOURCE_DISCLAIMER}
       </div>
     </footer>
   );

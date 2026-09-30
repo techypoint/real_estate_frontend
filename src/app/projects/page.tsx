@@ -144,8 +144,6 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
           </div>
         )}
 
-        <SourceNote />
-
         {result.items.length ? (
           <>
             <div className="grid">
@@ -166,6 +164,8 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
             </div>
           </div>
         )}
+
+        <SourceNote />
       </div>
 
       <BottomNav />
