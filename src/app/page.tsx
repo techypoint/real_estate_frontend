@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Find Your Next Home — Real Estate Projects Across India",
   description:
-    "We help you find the right home — search real estate projects across India, matched to your budget, configuration and timeline, with the official RERA record behind every listing so you can research with confidence.",
+    "We help you find the right home — search real estate projects across India, matched to your budget, configuration and timeline, with each promoter's UP-RERA filing shown alongside the listing.",
   alternates: { canonical: "/" },
 };
 
@@ -19,7 +19,7 @@ const QUICK_TYPES = ["Residential", "Commercial", "Mixed", "Plotting"];
 const TRUST_POINTS = [
   "We help you find a home that fits, not close a sale",
   "Independent — we work for you, not the builder",
-  "Every project checked against its official RERA filing",
+  "Every project shown with its UP-RERA filing",
   "Every legal document, in one place",
 ];
 
@@ -32,7 +32,7 @@ const WHY_US = [
   {
     icon: "shield",
     title: "Nothing hidden, nothing assumed",
-    body: "Promoter details, bank accounts, land records, sanctioned dates — pulled straight from each project's official RERA filing, not the marketing brochure.",
+    body: "Promoter details, bank accounts, land records, sanctioned dates — pulled straight from each project's UP-RERA filing and reproduced as filed, not rewritten from a marketing brochure.",
   },
   {
     icon: "tag",
@@ -56,8 +56,8 @@ export default async function HomePage() {
           <h1 className="rise-in rise-in-1">We&rsquo;ll help you find a home you&rsquo;ll love.</h1>
           <p className="rise-in rise-in-2">
             Tell us your budget, configuration and timeline, and we&rsquo;ll guide you to real
-            estate projects across India that genuinely fit — every one checked against its
-            official RERA record, not just a builder&rsquo;s brochure.
+            estate projects across India that genuinely fit — every one shown with its UP-RERA
+            filing, not just a builder&rsquo;s brochure.
           </p>
 
           <div className="rise-in rise-in-3">
@@ -164,11 +164,11 @@ export default async function HomePage() {
           <h2>Your next home is one search away.</h2>
           <p>
             Tell us what you&rsquo;re looking for, or browse the catalogue yourself — every project
-            checked against its official RERA record.
+            shown with its UP-RERA filing, not just a builder&rsquo;s brochure.
           </p>
           <div className="btns">
             <Link className="btn btn-primary" href="/projects">Browse Projects</Link>
-            <Link className="btn btn-outline" href="/#why-us">Why trust us</Link>
+            <Link className="btn btn-outline" href="/#why-us">How we work</Link>
           </div>
         </div>
       </section>

@@ -8,6 +8,8 @@ import { buildContentSections } from "@/components/sections/registry";
 import { buildReraSections } from "@/components/sections/ReraSections";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
+import { SourceNote } from "@/components/SourceNote";
+import { RERA_BADGE_LABEL } from "@/lib/copy";
 import type { Project } from "@/lib/types";
 import { projectSlug, regFromSlug } from "@/lib/slug";
 
@@ -86,7 +88,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     `${name}${where ? ` in ${where}` : ""}.`,
     bhks.length ? `${bhks.join(" & ")} BHK.` : "",
     `RERA ${project.registration_no}.`,
-    "Floor plans, configurations and approved documents.",
+    "Floor plans, configurations and the documents filed with UP-RERA.",
   ]
     .filter(Boolean)
     .join(" ");
@@ -198,7 +200,11 @@ export default async function ProjectPage({ params }: { params: Params }) {
         )}
         <div className="scrim" />
         <div className="content">
-          {project.has_detail && <span className="showcase-badge">RERA Verified · {project.registration_no}</span>}
+          {project.has_detail && (
+            <span className="showcase-badge">
+              {RERA_BADGE_LABEL} · {project.registration_no}
+            </span>
+          )}
           <h1>{displayName}</h1>
           <div className="loc">
             {[project.promoter_name, c?.marketing?.locality, c?.marketing?.city ?? project.district]
@@ -231,7 +237,7 @@ export default async function ProjectPage({ params }: { params: Params }) {
       )}
 
       {!project.has_detail && !contentSections.length && (
-        <div className="notice" style={{ margin: "var(--sp-5)" }}>
+        <div className="notice" style={{ margin: "var(--sp-5) var(--sp-5) 0" }}>
           <Icon name="info" className="icon icon-sm" />
           <span>
             Full project detail (bank accounts, unit inventory, documents, agents) has not been
@@ -239,6 +245,11 @@ export default async function ProjectPage({ params }: { params: Params }) {
           </span>
         </div>
       )}
+
+      {/* Inside the shell but OUTSIDE the tab panels, so the caveat is on screen
+          for every project — detailed or listing-only — and on both the Overview
+          and Legal Data tabs, without rendering two copies on the same page. */}
+      <SourceNote style={{ margin: "var(--sp-5)" }} />
     </div>
   );
 
@@ -262,8 +273,9 @@ export default async function ProjectPage({ params }: { params: Params }) {
       <div className="legal-head">
         <div className="showcase-eyebrow">UP-RERA Registry Record</div>
         <h2>Legal Data</h2>
-        <p>Every fact UP-RERA holds on file for this project — documents, the full unit/plan
-          inventory, promoter, bank accounts, land records and agents, exactly as filed.</p>
+        <p>What the promoter filed with UP-RERA for this project — documents, the full unit/plan
+          inventory, promoter, bank accounts, land records and agents, reproduced exactly as
+          filed. AcreInfotech does not verify these filings.</p>
         <div className="legal-regfacts">
           <div className="row"><span className="k">Registration No.</span><span className="v">{project.registration_no}</span></div>
           <div className="row"><span className="k">Registration Date</span><span className="v">{project.registration_date ?? "—"}</span></div>

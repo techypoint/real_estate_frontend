@@ -23,7 +23,10 @@ export function BlogHeroImage({
   return (
     <figure className="blog-hero">
       <div className="blog-hero-img">
-        <Image src={blog.heroImageUrl} alt={blog.title} fill sizes="(min-width: 768px) 700px, 100vw" priority={priority} />
+        {/* At >=1024px the article column is capped at ~760px by .article-shell;
+            below that it is full-bleed. Telling the browser that stops it
+            fetching a 1200px candidate for a 760px slot. */}
+        <Image src={blog.heroImageUrl} alt={blog.title} fill sizes="(min-width: 1024px) 760px, 100vw" priority={priority} />
       </div>
       {blog.heroImageAttribution && (
         <figcaption className="blog-hero-credit">

@@ -7,6 +7,7 @@ import { SearchForm } from "@/components/SearchForm";
 import { Pagination } from "@/components/Pagination";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
+import { SourceNote } from "@/components/SourceNote";
 
 const TYPES = ["Residential", "Commercial", "Mixed", "Plotting"];
 const LIMIT = 24;
@@ -26,7 +27,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 
   return {
     title,
-    description: `Find ${type || "real estate"} projects${district ? ` in ${district}` : ""} that fit what you're looking for — checked against their official RERA record, on AcreInfotech.`,
+    description: `Find ${type || "real estate"} projects${district ? ` in ${district}` : ""} that fit what you're looking for — with the details each promoter filed with UP-RERA, on AcreInfotech.`,
     // Filtered and paginated permutations are near-duplicates; point them at the
     // clean listing so ranking signals consolidate on one canonical URL.
     alternates: { canonical: "/projects" },
@@ -142,6 +143,8 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
             ))}
           </div>
         )}
+
+        <SourceNote />
 
         {result.items.length ? (
           <>

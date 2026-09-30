@@ -100,6 +100,21 @@ export function IconSprite() {
         <line x1="4.2" y1="15.8" x2="5.6" y2="14.4" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
         <line x1="14.4" y1="5.6" x2="15.8" y2="4.2" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
       </symbol>
+      <symbol id="icon-clock" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2.25" fill="none" />
+        <path d="M10 6V10L12.8 12" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-link" viewBox="0 0 20 20">
+        <path d="M8.2 11.8L11.8 8.2" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
+        <path d="M7.2 8.7L5.4 10.5A3.4 3.4 0 1010.2 15.3L12 13.5" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <path d="M12.8 11.3L14.6 9.5A3.4 3.4 0 109.8 4.7L8 6.5" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-share" viewBox="0 0 20 20">
+        <circle cx="15" cy="4.6" r="2.4" stroke="currentColor" strokeWidth="2" fill="none" />
+        <circle cx="5" cy="10" r="2.4" stroke="currentColor" strokeWidth="2" fill="none" />
+        <circle cx="15" cy="15.4" r="2.4" stroke="currentColor" strokeWidth="2" fill="none" />
+        <path d="M12.9 5.8L7.1 8.8M7.1 11.2L12.9 14.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </symbol>
       <symbol id="icon-moon" viewBox="0 0 20 20">
         <path d="M17 12.3A7.3 7.3 0 018 3.3a.6.6 0 00-.8-.6A7.7 7.7 0 1017.6 13a.6.6 0 00-.6-.7z" stroke="currentColor" strokeWidth="2.1" strokeLinejoin="round" fill="none" />
       </symbol>
