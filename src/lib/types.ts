@@ -172,3 +172,28 @@ export type Stats = { total: number; withDetail: number; listed: number; distric
 
 /** One entry from `/api/projects/meta/published` — feeds the URL slug and generateStaticParams. */
 export type PublishedProjectRef = { registration_no: string; name: string };
+
+/**
+ * A blog post from the Java Blog API, written by the content pipeline in
+ * agentic_ai_workflow (see SOCIAL_CONTENT_PIPELINE.md there) after human
+ * approval. `body` is Markdown; render it, don't treat it as HTML.
+ */
+export type Blog = {
+  id: string;
+  slug: string;
+  title: string;
+  body: string;
+  seoDescription?: string;
+  tags?: string[];
+  // heroImageUrl is either an existing listing's own R2-hosted photo, or —
+  // when heroImageAttribution is set — a hotlinked Unsplash photo (never
+  // re-hosted; that's the sanctioned way to use their free API). Unsplash's
+  // terms require the attribution to be visibly shown next to the image
+  // whenever it's present — see BlogHeroImage.
+  heroImageUrl?: string;
+  heroImageAttribution?: string;
+  heroImageAttributionUrl?: string;
+  status: "DRAFT" | "PUBLISHED";
+  publishedAt?: string;
+  createdAt: string;
+};

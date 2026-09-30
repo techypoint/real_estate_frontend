@@ -13,6 +13,10 @@ const nextConfig = {
       // bucket URL instead of the custom domain — see real_estate_backend
       // application-local.properties.
       { protocol: "https", hostname: "pub-9e15b4f51c5d4efbaf348e497020fd0c.r2.dev" },
+      // Blog hero images for topic-digest posts (no specific listing) are
+      // hotlinked from Unsplash's own CDN, not re-hosted — see UnsplashClient
+      // in real_estate_backend and lib/types.ts's Blog.heroImageAttribution.
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
     // Floor plans are tall portraits; these widths cover phone -> desktop 2x.
     deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600],

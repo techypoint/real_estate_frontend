@@ -876,6 +876,38 @@ footer.site-footer { background: var(--surface); border-top: 1px solid var(--bor
 
 .prose { margin: 0; font-size: var(--text-sm); line-height: 1.65; color: var(--text-muted); max-width: 68ch; }
 
+/* Full blog post body (rendered from Markdown). Unlike .prose above (one
+   muted intro paragraph), this reads at full text color/size across nested
+   headings, lists and tables — a whole article, not a caption. */
+.article-body { max-width: 68ch; font-size: var(--text-base); line-height: 1.7; color: var(--text); }
+.article-body > * + * { margin-top: var(--sp-4); }
+.article-body h2 { font-size: var(--text-lg); margin: var(--sp-8) 0 0; }
+.article-body h3 { font-size: var(--text-md); margin: var(--sp-6) 0 0; }
+.article-body p { margin: 0; }
+.article-body ul, .article-body ol { margin: 0; padding-left: var(--sp-6); }
+.article-body li + li { margin-top: var(--sp-1); }
+.article-body a { color: var(--accent); text-decoration: underline; }
+.article-body strong { font-weight: 700; }
+.article-body blockquote { margin: 0; padding-left: var(--sp-4); border-left: 2px solid var(--border-strong); color: var(--text-muted); }
+.article-body table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.article-body th, .article-body td { padding: var(--sp-2) var(--sp-3); border: 1px solid var(--border); text-align: left; }
+.article-body th { background: var(--surface-2); font-weight: 700; }
+.article-body code { font-size: 0.9em; background: var(--surface-2); padding: 0.15em 0.4em; border-radius: var(--radius-xs); }
+
+/* Blog listing cards reuse .mini-card (image-topped) rather than .card
+   (text-only) — see BlogCard.tsx. */
+.mini-card-body .meta-line { font-size: var(--text-xs); color: var(--text-faint); margin-top: var(--sp-2); }
+.mini-card-body .badge-row { margin-top: var(--sp-2); }
+
+/* Blog post hero image — full width, capped height so a tall/odd-ratio
+   Unsplash photo never dominates the page. The credit line is required by
+   Unsplash's API terms whenever heroImageAttribution is set, not styling. */
+.blog-hero { margin: 0 0 var(--sp-6); }
+.blog-hero-img { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 420px; border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-2); }
+.blog-hero-img img { object-fit: cover; }
+.blog-hero-credit { margin-top: var(--sp-2); font-size: var(--text-xs); color: var(--text-faint); }
+.blog-hero-credit a { color: var(--text-faint); text-decoration: underline; }
+
 /* ============================================================
    Next.js port — server-rendered variants of previously JS-built markup.
    Same visual language; different elements (links instead of buttons,

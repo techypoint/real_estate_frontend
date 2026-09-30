@@ -1,4 +1,4 @@
-import type { PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats } from "./types";
+import type { Blog, PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats } from "./types";
 
 /**
  * Client for the Java backend.
@@ -17,6 +17,10 @@ export const REVALIDATE = {
   project: 3600,
   // Listing and counts move as the importer runs.
   list: 300,
+  // Blog content changes only when the content pipeline's Publisher step
+  // writes a new post; that step also hits /api/revalidate, so this too is
+  // just a safety net.
+  blog: 3600,
 } as const;
 
 type FetchOpts = { revalidate?: number; tags?: string[] };
@@ -74,4 +78,13 @@ export const api = {
   /** Registration number + name of published projects — feeds the URL slug and generateStaticParams. */
   publishedProjectRefs: () =>
     apiGet<PublishedProjectRef[]>("/api/projects/meta/published", { revalidate: REVALIDATE.list }),
+
+  listBlogs: (params: { page?: number; limit?: number } = {}) =>
+    apiGet<PageResponse<Blog>>(`/api/blogs${qs(params)}`, { revalidate: REVALIDATE.blog, tags: ["blogs"] }),
+
+  getBlog: (slug: string) =>
+    apiGet<Blog>(`/api/blogs/${encodeURIComponent(slug)}`, {
+      revalidate: REVALIDATE.blog,
+      tags: [`blog:${slug}`],
+    }),
 };
