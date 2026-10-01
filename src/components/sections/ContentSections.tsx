@@ -49,12 +49,12 @@ export function AmenitiesSection({ content }: { content: ProjectContent }) {
     <div className="amenity-groups">
       {groups.map((g) => (
         <div className="subsection" key={g.group}>
-          <h4 className="subhead">
+          <h3 className="subhead">
             {g.group}
             {g.access && g.access !== "all_residents" && (
               <span className="badge tier">{formatAccess(g.access)}</span>
             )}
-          </h4>
+          </h3>
           <ul className="tag-list">
             {g.items.map((item) => (
               <li key={item}>{item}</li>
@@ -172,7 +172,7 @@ export function LocationSection({ content }: { content: ProjectContent }) {
 
       {groups.map((g) => (
         <div className="subsection" key={g.cat}>
-          <h4 className="subhead">{CATEGORY_LABELS[g.cat] ?? g.cat}</h4>
+          <h3 className="subhead">{CATEGORY_LABELS[g.cat] ?? g.cat}</h3>
           <div className="kv-list">
             {g.rows.map((it) => (
               <div className="row" key={it.name}>

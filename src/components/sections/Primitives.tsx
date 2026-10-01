@@ -75,7 +75,7 @@ export function CustomBlock({ section }: { section: CustomSection }) {
         <>
           {(d as ListGroup[]).map((g) => (
             <div className="subsection" key={g.group}>
-              <h4 className="subhead">{g.group}</h4>
+              <h3 className="subhead">{g.group}</h3>
               <ul className="tag-list">
                 {g.items.map((item) => (
                   <li key={item}>{item}</li>

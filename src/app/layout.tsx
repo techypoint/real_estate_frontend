@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { IconSprite } from "@/components/IconSprite";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ThemeScript } from "@/components/ThemeToggle";
@@ -58,11 +59,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeScript />
+        <GoogleAnalytics />
       </head>
       <body className="page-body">
         <IconSprite />
         <SiteHeader />
-        {children}
+        <main>{children}</main>
         <SiteFooter />
       </body>
     </html>

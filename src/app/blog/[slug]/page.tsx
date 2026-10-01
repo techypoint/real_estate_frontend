@@ -23,7 +23,7 @@ const MAX_PREBUILT_BLOGS = 200;
 const RELATED_POOL = 24;
 
 const SITE_NAME = "AcreInfotech";
-const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
+const SITE_URL = process.env.SITE_URL ?? "https://acreinfotech.com";
 
 export async function generateStaticParams() {
   try {

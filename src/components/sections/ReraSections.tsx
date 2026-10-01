@@ -68,7 +68,7 @@ function Subsection({ title, children }: { title: string; children: React.ReactN
   if (!children) return null;
   return (
     <div className="subsection">
-      <h4 className="subhead">{title}</h4>
+      <h3 className="subhead">{title}</h3>
       {children}
     </div>
   );
@@ -142,15 +142,6 @@ export function buildReraSections(p: Project): RenderedSection[] {
     count: p.documents?.length ?? 0,
     node: <Documents docs={p.documents} />,
   });
-
-  if (d.plan_details?.length) {
-    sections.push({
-      id: "sec-units",
-      title: "Unit / Plan Inventory",
-      count: d.plan_details.length,
-      node: <PTable rows={d.plan_details} titleFields={["Block No", "Flat/ Apartment/ Shop/Plot type"]} />,
-    });
-  }
 
   sections.push({
     id: "sec-promoter",
@@ -248,6 +239,15 @@ export function buildReraSections(p: Project): RenderedSection[] {
           </Subsection>
         </>
       ),
+    });
+  }
+
+  if (d.plan_details?.length) {
+    sections.push({
+      id: "sec-units",
+      title: "Unit / Plan Inventory",
+      count: d.plan_details.length,
+      node: <PTable rows={d.plan_details} titleFields={["Block No", "Flat/ Apartment/ Shop/Plot type"]} />,
     });
   }
 
