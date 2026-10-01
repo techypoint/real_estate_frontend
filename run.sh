@@ -15,6 +15,9 @@
 #   ./run.sh prod --fg       # foreground instead — blocks the terminal, Ctrl+C to stop
 #   ./run.sh stop            # stop whatever's listening on the port
 #   ./run.sh status          # is it running, and as what pid
+#   ./run.sh restart         # stop, then start — local (default), background
+#   ./run.sh restart prod    # stop, then start — prod, background
+#   ./run.sh restart prod --fg   # stop, then start — prod, foreground
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -29,15 +32,23 @@ listening_pids() {
   ss -tlnp 2>/dev/null | grep ":${PORT} " | grep -oP 'pid=\K[0-9]+' | sort -u || true
 }
 
+stop_server() {
+  pids="$(listening_pids)"
+  if [[ -z "$pids" ]]; then
+    echo "Not running."
+  else
+    echo "$pids" | xargs -r kill
+    echo "Stopped (pid(s): $(echo "$pids" | tr '\n' ' '))."
+    for _ in $(seq 1 30); do
+      [[ -z "$(listening_pids)" ]] && break
+      sleep 1
+    done
+  fi
+}
+
 case "${1:-}" in
   stop)
-    pids="$(listening_pids)"
-    if [[ -z "$pids" ]]; then
-      echo "Not running."
-    else
-      echo "$pids" | xargs -r kill
-      echo "Stopped (pid(s): $(echo "$pids" | tr '\n' ' '))."
-    fi
+    stop_server
     exit 0
     ;;
   status)
@@ -49,6 +60,10 @@ case "${1:-}" in
     fi
     exit 0
     ;;
+  restart)
+    stop_server
+    shift
+    ;;
 esac
 
 MODE="${1:-local}"
@@ -57,7 +72,7 @@ FOREGROUND=false
 
 case "$MODE" in
   local|prod) ;;
-  *) echo "Usage: $0 [local|prod] [--fg]   |   $0 stop   |   $0 status" >&2; exit 1 ;;
+  *) echo "Usage: $0 [local|prod] [--fg]   |   $0 stop   |   $0 status   |   $0 restart [local|prod] [--fg]" >&2; exit 1 ;;
 esac
 
 if [[ ! -x "$NEXT" ]]; then

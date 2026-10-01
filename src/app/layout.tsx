@@ -5,7 +5,7 @@ import { ThemeScript } from "@/components/ThemeToggle";
 import "./globals.css";
 
 const SITE_NAME = "AcreInfotech";
-const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
+const SITE_URL = process.env.SITE_URL ?? "https://acreinfotech.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
