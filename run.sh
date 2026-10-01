@@ -60,11 +60,13 @@ case "${1:-}" in
     fi
     exit 0
     ;;
-  restart)
-    stop_server
-    shift
-    ;;
 esac
+
+RESTART=false
+if [[ "${1:-}" == "restart" ]]; then
+  RESTART=true
+  shift
+fi
 
 MODE="${1:-local}"
 FOREGROUND=false
@@ -80,11 +82,15 @@ if [[ ! -x "$NEXT" ]]; then
   exit 1
 fi
 
-if [[ -n "$(listening_pids)" ]]; then
+if ! $RESTART && [[ -n "$(listening_pids)" ]]; then
   echo "Already running on port $PORT. Run '$0 stop' first." >&2
   exit 1
 fi
 
+# Build BEFORE stopping the old server (prod only) — `next build` can take
+# tens of seconds to minutes, and the old process keeps serving traffic
+# while it runs. Stopping first would mean the whole build window is
+# downtime; building first shrinks it to just the stop+start handoff below.
 if [[ "$MODE" == "prod" ]]; then
   echo "Building — mode: prod"
   "$NEXT" build
@@ -92,6 +98,8 @@ if [[ "$MODE" == "prod" ]]; then
 else
   CMD=("$NEXT" dev -p "$PORT")
 fi
+
+$RESTART && stop_server
 
 if $FOREGROUND; then
   echo "Starting frontend — mode: $MODE (foreground)"
