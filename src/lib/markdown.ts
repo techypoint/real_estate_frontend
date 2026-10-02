@@ -32,6 +32,18 @@ const WORDS_PER_MINUTE = 200;
 const LINKABLE_DEPTHS = new Set([2, 3]);
 
 /**
+ * The page renders blog.title as its own <h1> (see app/blog/[slug]/page.tsx).
+ * The content-writer agent nonetheless sometimes opens the Markdown body with
+ * a redundant "# <same title>" line, the way a standalone article normally
+ * would. Stripping a leading ATX h1 here — the one place every caller routes
+ * through — fixes that regardless of why a particular piece of stored
+ * content has it, without needing a data migration per post.
+ */
+function stripLeadingH1(markdown: string): string {
+  return markdown.replace(/^\s*#[ \t]+[^\n]*\n+/, "");
+}
+
+/**
  * Flatten an inline token tree to plain text, so a heading written as
  * "## The **carpet area** trap" yields a clean TOC label and a clean slug
  * rather than one containing markup.
@@ -61,7 +73,8 @@ function attr(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export function renderArticle(markdown: string): RenderedArticle {
+export function renderArticle(rawMarkdown: string): RenderedArticle {
+  const markdown = stripLeadingH1(rawMarkdown);
   const headings: ArticleHeading[] = [];
   const seen = new Map<string, number>();
 
