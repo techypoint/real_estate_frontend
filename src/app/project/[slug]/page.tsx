@@ -270,8 +270,8 @@ export default async function ProjectPage({ params }: { params: Params }) {
         <div className="showcase-eyebrow">UP-RERA Registry Record</div>
         <h2>Legal Data</h2>
         <p>What the promoter filed with UP-RERA for this project — documents, the full unit/plan
-          inventory, promoter, bank accounts, land records and agents, reproduced exactly as
-          filed. AcreInfotech does not verify these filings.</p>
+          inventory, promoter, bank accounts, land records and agents, reproduced as filed, with
+          personal contact numbers withheld. AcreInfotech does not verify these filings.</p>
         <div className="legal-regfacts">
           <div className="row"><span className="k">Registration No.</span><span className="v">{project.registration_no}</span></div>
           <div className="row"><span className="k">Registration Date</span><span className="v">{project.registration_date ?? "—"}</span></div>

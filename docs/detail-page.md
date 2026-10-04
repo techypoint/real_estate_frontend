@@ -76,6 +76,17 @@ this round). Gets a `.legal-head` intro with the registration facts
 (reg. no/date, declared completion, tehsil) that moved out of the Overview
 hero, since those are compliance facts, not sales facts.
 
+**Promoter contact numbers are deliberately withheld (2026-10-04.)** The
+`Mobile` rows for the promoter and each co-promoter were removed from the
+Promoter section on request — the filed RERA record carries them, the site
+does not publish them. The `.legal-head` intro says "reproduced as filed,
+with personal contact numbers withheld" rather than "reproduced exactly as
+filed" for exactly this reason: don't claim completeness while omitting a
+field. Promoter *email* is still shown. Note the dynamic tables (`PTable`)
+render whatever column keys the backend sends, so if a `detail` table ever
+carries a mobile/contact column a number could resurface there — that would
+need a narrow column filter in `PTable`, not a global regex.
+
 ## Click-to-zoom (every content image)
 
 `ZoomableImage.tsx` exports two pieces:

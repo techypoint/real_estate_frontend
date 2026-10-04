@@ -5,14 +5,11 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact Us",
-  description: "Get in touch with AcreInfotech — send an enquiry, or reach us directly by phone, WhatsApp or email.",
+  description: "Get in touch with AcreInfotech — send an enquiry, or reach us directly by email.",
   alternates: { canonical: "/contact" },
 };
 
 const EMAIL = "founder@acreinfotech.com";
-const PHONE_DISPLAY = "+91 84472 54377";
-const PHONE_TEL = "+918447254377";
-const WHATSAPP_URL = "https://wa.me/918447254377";
 
 export default function ContactPage() {
   return (
@@ -27,19 +24,6 @@ export default function ContactPage() {
               negotiation, paperwork, all handled.
             </p>
             <div className="doc-list">
-              <div className="doc-item">
-                <span className="doc-icon">
-                  <Icon name="phone" />
-                </span>
-                <div className="doc-info">
-                  <div className="doc-name">Phone / WhatsApp</div>
-                  <div className="doc-sub">{PHONE_DISPLAY}</div>
-                </div>
-                <div className="doc-actions">
-                  <a href={`tel:${PHONE_TEL}`}>Call</a>
-                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-                </div>
-              </div>
               <div className="doc-item">
                 <span className="doc-icon">
                   <Icon name="mail" />
