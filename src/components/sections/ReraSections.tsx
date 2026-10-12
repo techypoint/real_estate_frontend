@@ -151,7 +151,6 @@ export function buildReraSections(p: Project): RenderedSection[] {
         <div className="kv-list">
           <KvRow k="Name" v={promoter.name} />
           <KvRow k="Type" v={promoter.applicant_type} />
-          <KvRow k="Mobile" v={promoter.mobile} icon="phone" />
           <KvRow k="Email" v={promoter.email} icon="mail" />
           <KvRow k="Address" v={promoter.address} />
           <KvRow k="Total Projects" v={promoter.total_projects} />
@@ -164,7 +163,6 @@ export function buildReraSections(p: Project): RenderedSection[] {
                 <div className="kv-list" style={{ marginBottom: 14 }} key={i}>
                   <KvRow k="Name" v={cp.name} />
                   <KvRow k="Type" v={cp.applicant_type} />
-                  <KvRow k="Mobile" v={cp.mobile} icon="phone" />
                   <KvRow k="Email" v={cp.email} icon="mail" />
                   <KvRow k="Address" v={cp.address} />
                 </div>
