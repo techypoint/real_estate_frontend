@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SOCIAL_LINKS } from "@/lib/social";
 import { Icon } from "./IconSprite";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -50,6 +51,25 @@ export function SiteFooter() {
           <Link href="/blog">Blog</Link>
           <Link href="/about">About Us</Link>
           <Link href="/contact">Contact Us</Link>
+        </nav>
+        {/*
+          Icon renders aria-hidden, so each anchor would otherwise be an
+          unlabelled link — hence both the aria-label and the sr-only text.
+        */}
+        <nav className="social-row" aria-label="Social profiles">
+          {SOCIAL_LINKS.map((s) => (
+            <a
+              key={s.label}
+              className="social-link"
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`AcreInfotech on ${s.label}`}
+            >
+              <Icon name={s.icon} />
+              <span className="sr-only">{s.label}</span>
+            </a>
+          ))}
         </nav>
       </div>
     </footer>

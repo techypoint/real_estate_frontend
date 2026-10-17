@@ -3,6 +3,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { IconSprite } from "@/components/IconSprite";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ThemeScript } from "@/components/ThemeToggle";
+import { SOCIAL_LINKS } from "@/lib/social";
 import "./globals.css";
 
 const SITE_NAME = "AcreInfotech";
@@ -41,6 +42,27 @@ export const viewport: Viewport = {
   themeColor: "#f7f6fb",
 };
 
+/**
+ * Site-wide Organization node.
+ *
+ * `sameAs` is the whole point: it is how Google ties these social profiles to
+ * the AcreInfotech brand entity rather than treating them as unrelated pages.
+ * Emitted on every page, which is conventional for Organization — the blog's
+ * own BlogPosting/BreadcrumbList nodes sit alongside it without conflict.
+ */
+function OrganizationJsonLd() {
+  const organization = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: { "@type": "ImageObject", url: `${SITE_URL}/acreinfotech-appicon-dark-180w.png` },
+    sameAs: SOCIAL_LINKS.map((s) => s.href),
+  };
+
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />;
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     /*
@@ -60,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <ThemeScript />
         <GoogleAnalytics />
+        <OrganizationJsonLd />
       </head>
       <body className="page-body">
         <IconSprite />

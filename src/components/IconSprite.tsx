@@ -118,6 +118,25 @@ export function IconSprite() {
       <symbol id="icon-moon" viewBox="0 0 20 20">
         <path d="M17 12.3A7.3 7.3 0 018 3.3a.6.6 0 00-.8-.6A7.7 7.7 0 1017.6 13a.6.6 0 00-.6-.7z" stroke="currentColor" strokeWidth="2.1" strokeLinejoin="round" fill="none" />
       </symbol>
+      {/*
+        Social marks, redrawn as stroke icons rather than the official filled
+        brand glyphs. The footer reads as one icon set and the design system
+        mandates thick-stroke line icons in currentColor (no ad hoc fills, no
+        brand hexes) — and redrawing also sidesteps Meta's brand-asset terms.
+        If the official glyphs are ever wanted instead, swap these two symbol
+        bodies: that is a deliberate departure from the design system's icon
+        rule and belongs in this comment, not slipped in silently.
+      */}
+      <symbol id="icon-instagram" viewBox="0 0 20 20">
+        <rect x="3" y="3" width="14" height="14" rx="4" stroke="currentColor" strokeWidth="2.25" strokeLinejoin="round" fill="none" />
+        <circle cx="10" cy="10" r="3.4" stroke="currentColor" strokeWidth="2.25" fill="none" />
+        <circle cx="14.2" cy="5.8" r="1.15" fill="currentColor" />
+      </symbol>
+      <symbol id="icon-facebook" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2.25" fill="none" />
+        <path d="M12 6.6h-1.3a1.6 1.6 0 00-1.6 1.6V17" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <line x1="7.6" y1="10.3" x2="12" y2="10.3" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
+      </symbol>
     </svg>
   );
 }

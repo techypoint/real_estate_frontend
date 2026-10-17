@@ -457,6 +457,14 @@ footer.site-footer { background: var(--surface); border-top: 1px solid var(--bor
 .site-footer .footer-nav { display: flex; justify-content: center; gap: var(--sp-5); flex-wrap: wrap; margin-bottom: var(--sp-3); }
 .site-footer .footer-nav a { color: var(--text-muted); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
 .site-footer .footer-nav a:hover { color: var(--accent); }
+.site-footer .social-row { display: flex; justify-content: center; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-3); }
+/* Square-ish hit area, not a round avatar button — the design system rules out
+   pill/full-round shapes. 44px keeps the touch target honest at icon size. */
+.site-footer .social-link {
+  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); color: var(--text-muted); transition: color var(--dur-fast) var(--ease);
+}
+.site-footer .social-link:hover { color: var(--accent); }
 
 /* ---------- Bottom nav ---------- */
 .bottom-nav {

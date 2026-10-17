@@ -1,6 +1,7 @@
 import { Icon } from "@/components/IconSprite";
 import { ContactForm } from "@/components/ContactForm";
 import { BottomNav } from "@/components/SiteChrome";
+import { SOCIAL_LINKS } from "@/lib/social";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -36,6 +37,25 @@ export default function ContactPage() {
                   <a href={`mailto:${EMAIL}`}>Email</a>
                 </div>
               </div>
+              {SOCIAL_LINKS.map((s) => (
+                <div className="doc-item" key={s.label}>
+                  <span className="doc-icon">
+                    <Icon name={s.icon} />
+                  </span>
+                  <div className="doc-info">
+                    <div className="doc-name">{s.label}</div>
+                    {/* The handle, not the href: the Facebook profile.php id
+                        is meaningless to read and long enough to be an
+                        overflow hazard in .doc-sub. */}
+                    <div className="doc-sub">{s.handle}</div>
+                  </div>
+                  <div className="doc-actions">
+                    <a href={s.href} target="_blank" rel="noopener noreferrer">
+                      Visit
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
