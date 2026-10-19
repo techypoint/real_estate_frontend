@@ -6,7 +6,7 @@ import { DATA_SOURCE_DISCLAIMER } from "@/lib/copy";
  *
  * Server Component — static text. Reuses the design system's `.notice` block,
  * which is already the established treatment for a source-quality warning
- * about the data next to it (see `.unit-note` / `.notice` in globals.css)
+ * about the data next to it (see `.notice` in globals.css)
  * rather than inventing a new banner.
  */
 export function SourceNote({ style }: { style?: React.CSSProperties }) {

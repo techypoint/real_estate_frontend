@@ -220,7 +220,19 @@ export default async function ProjectPage({ params }: { params: Params }) {
             <Fact k="Land parcel" v={fmtMeasure(c?.scale?.land_area)} />
             <div className="showcase-cta">
               <div className="btns">
-                <button className="btn btn-outline" type="button" disabled title="Coming soon">Download Brochure</button>
+                {project.brochure?.url ? (
+                  <a
+                    className="btn btn-outline"
+                    href={project.brochure.url}
+                    download={project.brochure.file_name}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Download Brochure
+                  </a>
+                ) : (
+                  <button className="btn btn-outline" type="button" disabled title="Coming soon">Download Brochure</button>
+                )}
                 <ProjectEnquiry registrationNo={project.registration_no} projectName={displayName} />
               </div>
             </div>

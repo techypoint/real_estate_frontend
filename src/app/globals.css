@@ -923,8 +923,6 @@ footer.site-footer { background: var(--surface); border-top: 1px solid var(--bor
 
 /* Surfaced, not buried: this is a source-quality warning about the numbers
    directly above it. */
-.unit-note { display: flex; gap: var(--sp-2); margin: var(--sp-4) 0 0; padding: var(--sp-3); font-size: var(--text-xs); line-height: 1.5; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); }
-.unit-note .icon { flex: none; color: var(--text-faint); }
 
 /* ---- Primitive renderers for data-defined custom_sections ---- */
 

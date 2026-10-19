@@ -121,6 +121,15 @@ export type ProjectDocument = {
   size?: number;
 };
 
+export type ProjectBrochure = {
+  /** Absolute CDN URL — Java resolves the stored R2 object key before this reaches the frontend. */
+  url?: string;
+  file_name?: string;
+  /** Builder-hosted original the PDF was fetched from — provenance only, never linked. */
+  source_url?: string;
+  page_url?: string;
+};
+
 export type Project = {
   _id: string;
   registration_no: string;
@@ -142,6 +151,7 @@ export type Project = {
   co_promoters?: Record<string, string | undefined>[];
   detail?: Record<string, Record<string, string>[]>;
   documents?: ProjectDocument[];
+  brochure?: ProjectBrochure;
   has_detail?: boolean;
   content?: ProjectContent;
 };

@@ -68,14 +68,6 @@ function UnitRow({ unit }: { unit: UnitType }) {
 
           {unit.is_full_floor && <div className="unit-tag">Full-floor apartment</div>}
 
-          {/* A low-confidence source note is surfaced, not buried — see
-              ACE Medalleo's transposed balcony row for why this exists. */}
-          {unit.source_ref?.note && unit.source_ref.confidence !== "high" && (
-            <p className="unit-note">
-              <Icon name="info" className="icon icon-sm" />
-              <span>{unit.source_ref.note}</span>
-            </p>
-          )}
         </div>
       </div>
     </details>
