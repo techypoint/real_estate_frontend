@@ -1,43 +1,46 @@
 import Link from "next/link";
+import Image from "next/image";
 import { api } from "@/lib/api";
-import { fmtNum } from "@/lib/format";
+import { fmtMonth, fmtNum } from "@/lib/format";
+import { projectSlug } from "@/lib/slug";
 import { ProjectCard } from "@/components/ProjectCard";
 import { SearchForm } from "@/components/SearchForm";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
+import type { Project } from "@/lib/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Find Your Next Home — Real Estate Projects Across India",
+  title: "Find Your Next Home — Real Estate Projects in Uttar Pradesh",
   description:
-    "We help you find the right home — search real estate projects across India, matched to your budget, configuration and timeline, with each promoter's UP-RERA filing shown alongside the listing.",
+    "We help you buy the right home in Uttar Pradesh — explore new projects matched to your budget, configuration and timeline, with independent guidance from search to keys.",
   alternates: { canonical: "/" },
 };
 
 const QUICK_TYPES = ["Residential", "Commercial", "Mixed", "Plotting"];
 
 const TRUST_POINTS = [
-  "We help you find a home that fits, not close a sale",
-  "Independent — we work for you, not the builder",
-  "Every project shown with its UP-RERA filing",
-  "Every legal document, in one place",
+  "Independent advice — we work for you, not the builder",
+  "Handpicked projects across Uttar Pradesh",
+  "Floor plans, pricing and amenities in one place",
+  "Support from first site visit to final paperwork",
 ];
 
 const WHY_US = [
   {
     icon: "heart",
-    title: "Built around what fits you",
-    body: "Budget, configuration, possession timeline, locality — we help you narrow in on projects that genuinely match what you need, not just what's paying to be seen first.",
+    title: "Homes that fit your life",
+    body: "Budget, configuration, possession timeline, locality — we narrow the market down to projects that genuinely match what you need, not just what's paying to be seen first.",
   },
   {
-    icon: "shield",
-    title: "Nothing hidden, nothing assumed",
-    body: "Promoter details, bank accounts, land records, sanctioned dates — pulled straight from each project's UP-RERA filing and reproduced as filed, not rewritten from a marketing brochure.",
+    icon: "file",
+    title: "Complete property information",
+    body: "Every project comes with floor plans, configurations, amenities, location and its registration record — so you can compare homes side by side before you visit.",
   },
   {
     icon: "tag",
-    title: "Guidance that's on your side",
-    body: "We help you understand configurations, comparable projects and what to ask before you commit, so you walk into every conversation informed.",
+    title: "Guidance through the purchase",
+    body: "Site visits, comparing options, negotiating and the paperwork — we stay with you through every step so you walk into each conversation informed.",
   },
 ] as const;
 
@@ -49,15 +52,25 @@ export default async function HomePage() {
     api.listProjects({ limit: 6 }),
   ]);
 
+  // The listing comes back newest-first, so its head is the latest project
+  // added to the catalogue. The spotlight needs brochure content (photo,
+  // configurations) that the summary doesn't carry; a failed fetch just
+  // drops the spotlight rather than the whole homepage.
+  const latestRef = recent.items[0];
+  const latest = latestRef
+    ? await api.getProject(latestRef.registration_no).catch(() => undefined)
+    : undefined;
+
   return (
     <>
       <section className="hero">
         <div className="container">
-          <h1 className="rise-in rise-in-1">We&rsquo;ll help you find a home you&rsquo;ll love.</h1>
+          <div className="showcase-eyebrow rise-in rise-in-1">Homes across Uttar Pradesh</div>
+          <h1 className="rise-in rise-in-1">Buying a home? We&rsquo;ll help you get it right.</h1>
           <p className="rise-in rise-in-2">
-            Tell us your budget, configuration and timeline, and we&rsquo;ll guide you to real
-            estate projects across India that genuinely fit — every one shown with its UP-RERA
-            filing, not just a builder&rsquo;s brochure.
+            Tell us your budget, configuration and timeline. We&rsquo;ll shortlist new projects
+            across Uttar Pradesh that genuinely fit, and guide you from the first site visit to
+            the day you get your keys.
           </p>
 
           <div className="rise-in rise-in-3">
@@ -89,14 +102,22 @@ export default async function HomePage() {
         </div>
 
         <div className="showcase-content">
+          {latest && (
+            <section className="showcase-section" id="latest">
+              <div className="showcase-eyebrow">Just added</div>
+              <h2>Latest project</h2>
+              <LatestSpotlight project={latest} />
+            </section>
+          )}
+
           <section className="showcase-section" id="why-us">
-            <div className="showcase-eyebrow">Why we exist</div>
-            <h2>We&rsquo;re not here to sell you a property. We&rsquo;re here to help you find yours.</h2>
+            <div className="showcase-eyebrow">Why AcreInfotech</div>
+            <h2>A smarter, calmer way to buy your home.</h2>
             <p className="prose" style={{ marginBottom: "var(--sp-6)" }}>
               Buying a home is one of the biggest decisions you&rsquo;ll make — and most platforms
-              are built to close a lead, not earn your trust. We think you deserve better: guidance
-              that&rsquo;s on your side, and the real regulatory record behind every project, laid
-              out honestly rather than buried in brochure copy.
+              are built to close a lead, not earn your trust. We do it differently: honest,
+              independent guidance and complete property information for every project, so you
+              can choose with confidence.
             </p>
             <div className="mini-cards">
               {WHY_US.map((f) => (
@@ -126,8 +147,8 @@ export default async function HomePage() {
                 <div className="label">Districts Covered</div>
               </div>
               <div className="stat-card">
-                <div className="num">{fmtNum(stats.total)}</div>
-                <div className="label">Tracked on UP-RERA</div>
+                <div className="num">Free</div>
+                <div className="label">Buyer Guidance</div>
               </div>
             </div>
           </section>
@@ -152,7 +173,7 @@ export default async function HomePage() {
             ) : (
               <div className="empty-state">
                 <Icon name="inbox" />
-                No projects captured yet.
+                No projects listed yet.
               </div>
             )}
           </section>
@@ -161,19 +182,75 @@ export default async function HomePage() {
 
       <section className="cta-banner">
         <div className="container">
-          <h2>Your next home is one search away.</h2>
+          <h2>Your next home is one conversation away.</h2>
           <p>
-            Tell us what you&rsquo;re looking for, or browse the catalogue yourself — every project
-            shown with its UP-RERA filing, not just a builder&rsquo;s brochure.
+            Tell us what you&rsquo;re looking for and we&rsquo;ll shortlist the right projects for
+            you — or browse the catalogue yourself.
           </p>
           <div className="btns">
-            <Link className="btn btn-primary" href="/projects">Browse Projects</Link>
-            <Link className="btn btn-outline" href="/#why-us">How we work</Link>
+            <Link className="btn btn-primary" href="/contact">Talk to Us</Link>
+            <Link className="btn btn-outline" href="/projects">Browse Projects</Link>
           </div>
         </div>
       </section>
 
       <BottomNav />
     </>
+  );
+}
+
+/**
+ * The newest project, shown as a photo-led card. Reuses the detail page's
+ * showcase-hero markup so the homepage preview and the page it links to read
+ * as the same thing.
+ */
+function LatestSpotlight({ project }: { project: Project }) {
+  const c = project.content;
+  const displayName = c?.marketing?.display_name || project.project_name || project.registration_no;
+  const href = `/project/${encodeURIComponent(projectSlug(displayName, project.registration_no))}`;
+  const heroImage = [...(c?.gallery ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0];
+
+  const bhkList = [...new Set((c?.unit_types ?? []).map((u) => u.bhk))].sort((a, b) => a - b);
+  const facts = [
+    { k: "Configurations", v: bhkList.length ? `${bhkList.join(", ")} BHK` : undefined },
+    { k: "Starting price", v: c?.pricing?.starting_price?.display },
+    { k: "Possession", v: fmtMonth(c?.marketing?.possession_on) },
+  ].filter((f) => f.v);
+
+  return (
+    <Link className="showcase-shell spotlight" href={href}>
+      <div className="showcase-hero">
+        {heroImage?.url && (
+          <div className="hero-img">
+            <Image src={heroImage.url} alt={heroImage.alt || displayName} fill sizes="(min-width: 1280px) 1180px, 100vw" />
+          </div>
+        )}
+        <div className="scrim" />
+        <div className="content">
+          <h3 className="spotlight-name">{displayName}</h3>
+          <div className="loc">
+            {[project.promoter_name?.split(";")[0], c?.marketing?.locality, c?.marketing?.city ?? project.district]
+              .filter(Boolean)
+              .join(" — ")}
+          </div>
+          {c?.marketing?.tagline && <div className="tagline">{c.marketing.tagline}</div>}
+
+          <div className="showcase-facts">
+            {facts.map((f) => (
+              <div className="fact" key={f.k}>
+                <span className="k">{f.k}</span>
+                <span className="v">{f.v}</span>
+              </div>
+            ))}
+            <div className="showcase-cta">
+              <span className="btn btn-primary">
+                View project
+                <Icon name="chevron-right" className="icon icon-sm" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }

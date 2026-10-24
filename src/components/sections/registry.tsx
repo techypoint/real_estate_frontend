@@ -89,7 +89,7 @@ export type RenderedSection = {
 /**
  * Resolve a project's content into an ordered list of renderable sections.
  * Returns the same shape the RERA sections use (see ReraSections.tsx) — the
- * Overview tab renders this list, the Legal Data tab renders that one.
+ * Overview tab renders this list, the Property Information tab renders that one.
  */
 export function buildContentSections(content: ProjectContent | undefined): RenderedSection[] {
   if (!content) return [];

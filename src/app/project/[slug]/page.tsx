@@ -175,7 +175,7 @@ export default async function ProjectPage({ params }: { params: Params }) {
   if (slug !== canonicalSlug) permanentRedirect(`/project/${canonicalSlug}`);
 
   // Two intents, two tabs (see the design brief): Overview sells the project
-  // — brochure content only. Legal Data is the UP-RERA compliance record —
+  // — brochure content only. Property Information is the UP-RERA compliance record —
   // documents, promoter, bank accounts, land records, agents. They no longer
   // share one scroll, so each keeps its own section list.
   const contentSections = buildContentSections(c);
@@ -279,8 +279,8 @@ export default async function ProjectPage({ params }: { params: Params }) {
   const legalPanel = hasLegalTab && (
     <div className="tab-panel tab-panel-legal">
       <div className="legal-head">
-        <div className="showcase-eyebrow">UP-RERA Registry Record</div>
-        <h2>Legal Data</h2>
+        <div className="showcase-eyebrow">Registration &amp; records</div>
+        <h2>Property Information</h2>
         <p>What the promoter filed with UP-RERA for this project — documents, the full unit/plan
           inventory, promoter, bank accounts, land records and agents, reproduced as filed, with
           personal contact numbers withheld. AcreInfotech does not verify these filings.</p>
@@ -326,7 +326,7 @@ export default async function ProjectPage({ params }: { params: Params }) {
           <>
             <div className="detail-tabs">
               <label htmlFor="tab-overview">Overview</label>
-              <label htmlFor="tab-legal">Legal Data</label>
+              <label htmlFor="tab-legal">Property Information</label>
             </div>
             <div className="tab-panel tab-panel-overview">{overviewSections}</div>
             {legalPanel}
@@ -352,9 +352,9 @@ export default async function ProjectPage({ params }: { params: Params }) {
           </label>
           <label className="bn-item" htmlFor="tab-legal">
             <span className="icon-wrap">
-              <Icon name="shield" />
+              <Icon name="file" />
             </span>
-            Legal Data
+            Property Info
           </label>
         </BottomNav>
       ) : (

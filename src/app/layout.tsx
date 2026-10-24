@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: `%s — ${SITE_NAME}`,
   },
   description:
-    "We help you find the right home — search real estate projects across India by budget, configuration and timeline, with each promoter's UP-RERA filing shown alongside the listing.",
+    "We help you find the right home — explore new real estate projects across Uttar Pradesh by budget, configuration and timeline, with independent guidance from search to keys.",
   openGraph: { siteName: SITE_NAME, type: "website", locale: "en_IN" },
   robots: { index: true, follow: true },
   // The browser tab icon can only react to the OS-level prefers-color-scheme,

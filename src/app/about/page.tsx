@@ -89,8 +89,8 @@ export default async function AboutPage() {
                 <div className="label">Districts Covered</div>
               </div>
               <div className="stat-card">
-                <div className="num">{fmtNum(stats.total)}</div>
-                <div className="label">Tracked on UP-RERA</div>
+                <div className="num">Free</div>
+                <div className="label">Buyer Guidance</div>
               </div>
             </div>
           </section>

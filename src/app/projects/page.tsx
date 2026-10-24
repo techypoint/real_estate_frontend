@@ -27,7 +27,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 
   return {
     title,
-    description: `Find ${type || "real estate"} projects${district ? ` in ${district}` : ""} that fit what you're looking for — with the details each promoter filed with UP-RERA, on AcreInfotech.`,
+    description: `Find ${type || "real estate"} projects${district ? ` in ${district}` : ""} across Uttar Pradesh that fit what you're looking for — floor plans, pricing and amenities on AcreInfotech.`,
     // Filtered and paginated permutations are near-duplicates; point them at the
     // clean listing so ranking signals consolidate on one canonical URL.
     alternates: { canonical: "/projects" },
@@ -40,11 +40,10 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
   const q = first(sp.q);
   const district = first(sp.district);
   const type = first(sp.type);
-  const hasDetail = first(sp.hasDetail) === "true";
   const page = Math.max(1, Number(first(sp.page)) || 1);
 
   const [result, districts] = await Promise.all([
-    api.listProjects({ q, district, type, hasDetail, page, limit: LIMIT }),
+    api.listProjects({ q, district, type, page, limit: LIMIT }),
     api.districts(),
   ]);
 
@@ -53,7 +52,6 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
     if (q) params.set("q", q);
     if (district) params.set("district", district);
     if (type) params.set("type", type);
-    if (hasDetail) params.set("hasDetail", "true");
     if (nextPage > 1) params.set("page", String(nextPage));
     const s = params.toString();
     return s ? `/projects?${s}` : "/projects";
@@ -62,7 +60,6 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
   const activeFilters = [
     district && { label: district, key: "district" },
     type && { label: type, key: "type" },
-    hasDetail && { label: "Full detail only", key: "hasDetail" },
     q && { label: `“${q}”`, key: "q" },
   ].filter(Boolean) as { label: string; key: string }[];
 
@@ -71,7 +68,6 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
     if (q && key !== "q") params.set("q", q);
     if (district && key !== "district") params.set("district", district);
     if (type && key !== "type") params.set("type", type);
-    if (hasDetail && key !== "hasDetail") params.set("hasDetail", "true");
     const s = params.toString();
     return s ? `/projects?${s}` : "/projects";
   };
@@ -112,13 +108,6 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
                   {t}
                 </option>
               ))}
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="hasDetail">Detail</label>
-            <select id="hasDetail" name="hasDetail" defaultValue={hasDetail ? "true" : ""}>
-              <option value="">All projects</option>
-              <option value="true">Full detail captured</option>
             </select>
           </div>
           <button className="btn btn-primary filter-apply" type="submit">
