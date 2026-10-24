@@ -89,8 +89,8 @@ export default async function AboutPage() {
                 <div className="label">Districts Covered</div>
               </div>
               <div className="stat-card">
-                <div className="num">Free</div>
-                <div className="label">Buyer Guidance</div>
+                <div className="num">100%</div>
+                <div className="label">On the Buyer&rsquo;s Side</div>
               </div>
             </div>
           </section>

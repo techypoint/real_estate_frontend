@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import { fmtNum } from "@/lib/format";
 import { ProjectCard } from "@/components/ProjectCard";
-import { SearchForm } from "@/components/SearchForm";
+import { withProjectViews } from "@/lib/projectView";
 import { Pagination } from "@/components/Pagination";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
@@ -47,6 +47,8 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
     api.districts(),
   ]);
 
+  const views = await withProjectViews(result.items);
+
   const makeHref = (nextPage: number) => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
@@ -74,54 +76,62 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
 
   return (
     <>
-      <div className="container">
-        <div className="breadcrumb">
-          <Link href="/">Home</Link> / <span>Projects</span>
-        </div>
-
-        <SearchForm defaultQuery={q} />
-
-        {/*
-          Filters are a native GET form. Submitting navigates to a new
-          server-rendered URL, so every filter combination is linkable,
-          shareable, crawlable, and works without JavaScript.
-        */}
-        <form className="filter-bar" action="/projects" method="GET">
-          {q && <input type="hidden" name="q" value={q} />}
-          <div className="field">
-            <label htmlFor="district">District</label>
-            <select id="district" name="district" defaultValue={district}>
-              <option value="">All districts</option>
-              {districts.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
+      <section className="page-hero">
+        <div className="container">
+          <div className="breadcrumb">
+            <Link href="/">Home</Link> / <span>Projects</span>
           </div>
-          <div className="field">
-            <label htmlFor="type">Project type</label>
-            <select id="type" name="type" defaultValue={type}>
-              <option value="">All types</option>
-              {TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button className="btn btn-primary filter-apply" type="submit">
-            Apply
-          </button>
-        </form>
+          <span className="eyebrow">Homes across Uttar Pradesh</span>
+          <h1>{q ? <>Results for &ldquo;{q}&rdquo;</> : "Find a project that fits."}</h1>
+          <p>
+            {fmtNum(result.total)} project{result.total === 1 ? "" : "s"} with floor plans, pricing and
+            amenities — filter by district and type, or search by name.
+          </p>
 
-        <div className="section-title">
-          <h2>{q ? `Results for “${q}”` : "Browse Projects"}</h2>
-          <span className="count">
-            {fmtNum(result.total)} project{result.total === 1 ? "" : "s"}
-          </span>
+          {/*
+            One native GET form for search + filters. Submitting navigates to a
+            new server-rendered URL, so every combination is linkable,
+            shareable, crawlable, and works without JavaScript.
+          */}
+          <form className="hero-search" action="/projects" method="GET" role="search">
+            <label className="hs-field hs-q">
+              <span className="hs-label">Search</span>
+              <span className="hs-input">
+                <Icon name="search" className="icon icon-sm" />
+                <input type="search" name="q" defaultValue={q} placeholder="Project, developer or locality" aria-label="Search projects" />
+              </span>
+            </label>
+            <label className="hs-field">
+              <span className="hs-label">District</span>
+              <select name="district" defaultValue={district} aria-label="District">
+                <option value="">All districts</option>
+                {districts.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="hs-field">
+              <span className="hs-label">Property type</span>
+              <select name="type" defaultValue={type} aria-label="Property type">
+                <option value="">All types</option>
+                {TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="btn btn-primary hs-submit" type="submit">
+              <Icon name="search" className="icon icon-sm" />
+              Search
+            </button>
+          </form>
         </div>
+      </section>
 
+      <div className="container listing-body">
         {activeFilters.length > 0 && (
           <div className="active-filters">
             {activeFilters.map((f) => (
@@ -135,9 +145,9 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
 
         {result.items.length ? (
           <>
-            <div className="grid">
-              {result.items.map((p) => (
-                <ProjectCard key={p.registration_no} project={p} />
+            <div className="pgrid">
+              {views.map((p, i) => (
+                <ProjectCard key={p.reg} project={p} priority={i < 3} />
               ))}
             </div>
             <Pagination page={result.page} pages={result.pages} makeHref={makeHref} />

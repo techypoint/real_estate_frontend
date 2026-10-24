@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BlogCard } from "./BlogCard";
+import { Icon } from "./IconSprite";
 import type { Blog } from "@/lib/types";
 
 const MAX_RELATED = 3;
@@ -31,13 +32,13 @@ export function RelatedPosts({ current, candidates }: { current: Blog; candidate
 
   return (
     <section className="related-posts">
-      <div className="section-title">
+      <div className="home-head-row blog-more-head">
         <h2>Keep reading</h2>
-        <Link className="count" href="/blog">
-          All posts →
+        <Link className="text-link" href="/blog">
+          All articles <Icon name="arrow-right" className="icon icon-sm" />
         </Link>
       </div>
-      <div className="mini-cards">
+      <div className="bgrid">
         {ranked.map((b) => (
           <BlogCard key={b.id} blog={b} />
         ))}

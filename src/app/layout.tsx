@@ -39,7 +39,7 @@ export const viewport: Viewport = {
   // than one OS-driven scheme, so both are offered rather than picked for the
   // browser chrome to guess from.
   colorScheme: "light dark",
-  themeColor: "#f7f6fb",
+  themeColor: "#0a0a0a",
 };
 
 /**
@@ -68,17 +68,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     /*
      * suppressHydrationWarning is required, not cosmetic.
      *
-     * The theme script below runs before React hydrates and stamps
-     * data-theme onto <html>. The server-rendered markup has no such
-     * attribute, so React sees a mismatch it cannot reconcile and logs a
-     * hydration error. Any pre-paint theme script has this problem; suppressing
+     * The server renders the default dark theme (data-theme="dark"); the
+     * theme script below runs before React hydrates and removes it for a
+     * visitor who chose light. React then sees an attribute mismatch it
+     * cannot reconcile and logs a hydration error. Any pre-paint theme script has this problem; suppressing
      * it here is the sanctioned fix (it is what next-themes does).
      *
      * It applies ONE level deep — this element's own attributes and text — so
      * genuine mismatches anywhere inside the tree are still reported. It also
      * absorbs the same noise from browser extensions that mutate <html>.
      */
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <ThemeScript />
         <GoogleAnalytics />

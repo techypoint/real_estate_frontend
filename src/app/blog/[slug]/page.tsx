@@ -6,6 +6,7 @@ import { api, ApiError } from "@/lib/api";
 import { renderArticle } from "@/lib/markdown";
 import { BottomNav } from "@/components/SiteChrome";
 import { BlogHeroImage } from "@/components/BlogHeroImage";
+import { fmtTag } from "@/components/BlogCard";
 import { ArticleToc } from "@/components/ArticleToc";
 import { ArticleShare } from "@/components/ArticleShare";
 import { ReadingProgress } from "@/components/ReadingProgress";
@@ -143,14 +144,17 @@ function JsonLd({ blog, wordCount }: { blog: Blog; wordCount: number }) {
 function ArticleCta() {
   return (
     <aside className="article-cta">
-      <div className="article-cta-title">Looking for a home in Uttar Pradesh?</div>
+      <span className="eyebrow">Buying in Uttar Pradesh?</span>
+      <div className="article-cta-title">Let&rsquo;s find a home that fits.</div>
       <p>
-        Browse projects with the details each promoter filed with UP-RERA, or tell us your budget,
-        configuration and timeline and we&rsquo;ll help you narrow it down.
+        Tell us your budget, configuration and timeline and we&rsquo;ll shortlist projects that
+        genuinely match — or browse them yourself.
       </p>
       <div className="btns">
-        <Link className="btn btn-primary" href="/projects">Browse Projects</Link>
-        <Link className="btn btn-outline" href="/contact">Talk to us</Link>
+        <Link className="btn btn-primary" href="/contact">
+          Talk to an advisor <Icon name="arrow-right" className="icon icon-sm" />
+        </Link>
+        <Link className="btn btn-ghost" href="/projects">Browse projects</Link>
       </div>
     </aside>
   );
@@ -198,11 +202,22 @@ export default async function BlogPostPage({ params }: { params: Params }) {
         <div className="article-shell">
           <article>
             <header className="article-head">
-              {eyebrow && <div className="showcase-eyebrow">{eyebrow}</div>}
+              {eyebrow && <span className="eyebrow">{fmtTag(eyebrow)}</span>}
               <h1>{blog.title}</h1>
               {blog.seoDescription && <p className="article-deck">{blog.seoDescription}</p>}
 
               <div className="article-meta">
+                <span className="article-byline">
+                  <span className="article-avatar" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none">
+                      <path d="M5 22L24 7L43 22" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+                      <rect x="12" y="30" width="5.5" height="12" rx="1.4" fill="currentColor" opacity=".6" />
+                      <rect x="21.2" y="25" width="5.5" height="17" rx="1.4" fill="currentColor" />
+                      <rect x="30.4" y="33" width="5.5" height="9" rx="1.4" fill="currentColor" opacity=".45" />
+                    </svg>
+                  </span>
+                  By AcreInfotech
+                </span>
                 {date && <span>{date}</span>}
                 <span className="article-meta-read">
                   <Icon name="clock" className="icon icon-sm" />
@@ -214,7 +229,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 <div className="badge-row chips article-tags">
                   {blog.tags.map((t) => (
                     <span className="badge" key={t}>
-                      {t}
+                      {fmtTag(t)}
                     </span>
                   ))}
                 </div>

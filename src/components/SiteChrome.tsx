@@ -35,6 +35,9 @@ export function SiteHeader() {
             <Link href="/contact">Contact</Link>
           </nav>
           <ThemeToggle />
+          <Link className="btn btn-primary header-cta" href="/contact">
+            Talk to an advisor
+          </Link>
         </div>
       </div>
     </header>
@@ -45,32 +48,73 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="container">
-        <nav className="footer-nav" aria-label="Footer">
-          <Link href="/">Home</Link>
-          <Link href="/projects">Browse</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/about">About Us</Link>
-          <Link href="/contact">Contact Us</Link>
-        </nav>
-        {/*
-          Icon renders aria-hidden, so each anchor would otherwise be an
-          unlabelled link — hence both the aria-label and the sr-only text.
-        */}
-        <nav className="social-row" aria-label="Social profiles">
-          {SOCIAL_LINKS.map((s) => (
-            <a
-              key={s.label}
-              className="social-link"
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`AcreInfotech on ${s.label}`}
-            >
-              <Icon name={s.icon} />
-              <span className="sr-only">{s.label}</span>
-            </a>
-          ))}
-        </nav>
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <Link className="brand" href="/">
+              <svg className="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M5 22L24 7L43 22" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+                <rect x="12" y="30" width="5.5" height="12" rx="1.4" fill="currentColor" opacity=".55" />
+                <rect x="21.2" y="25" width="5.5" height="17" rx="1.4" fill="currentColor" opacity=".9" />
+                <rect x="30.4" y="33" width="5.5" height="9" rx="1.4" fill="currentColor" opacity=".4" />
+              </svg>
+              <span className="word">
+                <span className="primary">ACREINFOTECH</span>
+                <small>Find Your Next Home</small>
+              </span>
+            </Link>
+            <p>
+              Independent home-buying guidance across Uttar Pradesh — from the first search to the
+              day you get your keys.
+            </p>
+            {/*
+              Icon renders aria-hidden, so each anchor would otherwise be an
+              unlabelled link — hence both the aria-label and the sr-only text.
+            */}
+            <nav className="social-row" aria-label="Social profiles">
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.label}
+                  className="social-link"
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`AcreInfotech on ${s.label}`}
+                >
+                  <Icon name={s.icon} />
+                  <span className="sr-only">{s.label}</span>
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          <nav className="footer-col" aria-label="Explore">
+            <h2>Explore</h2>
+            <Link href="/projects">All projects</Link>
+            <Link href="/projects?type=Residential">Residential</Link>
+            <Link href="/projects?type=Commercial">Commercial</Link>
+            <Link href="/projects?type=Plotting">Plots</Link>
+          </nav>
+
+          <nav className="footer-col" aria-label="Company">
+            <h2>Company</h2>
+            <Link href="/about">About us</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
+
+          <div className="footer-col footer-cta">
+            <h2>Start your search</h2>
+            <p>Tell us what you&rsquo;re looking for and we&rsquo;ll shortlist homes that fit.</p>
+            <Link className="btn btn-primary" href="/contact">
+              Talk to an advisor
+            </Link>
+          </div>
+        </div>
+
+        <div className="footer-base">
+          <span>&copy; {new Date().getFullYear()} AcreInfotech. All rights reserved.</span>
+          <span>Project details are reproduced from public RERA filings — confirm with the promoter before you transact.</span>
+        </div>
       </div>
     </footer>
   );

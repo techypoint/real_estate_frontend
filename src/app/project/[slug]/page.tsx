@@ -208,7 +208,7 @@ export default async function ProjectPage({ params }: { params: Params }) {
           )}
           <h1>{displayName}</h1>
           <div className="loc">
-            {[project.promoter_name, c?.marketing?.locality, c?.marketing?.city ?? project.district]
+            {[project.promoter_name?.split(";")[0].trim(), c?.marketing?.locality, c?.marketing?.city ?? project.district]
               .filter(Boolean)
               .join(" — ")}
           </div>

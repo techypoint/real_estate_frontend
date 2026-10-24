@@ -137,6 +137,36 @@ export function IconSprite() {
         <path d="M12 6.6h-1.3a1.6 1.6 0 00-1.6 1.6V17" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         <line x1="7.6" y1="10.3" x2="12" y2="10.3" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
       </symbol>
+      <symbol id="icon-arrow-right" viewBox="0 0 20 20">
+        <path d="M4 10H16M11 5L16 10L11 15" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-check" viewBox="0 0 20 20">
+        <path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-key" viewBox="0 0 20 20">
+        <circle cx="6.5" cy="13.5" r="3.5" stroke="currentColor" strokeWidth="2.25" fill="none" />
+        <path d="M9 11L17 3M14 6L16.5 8.5M12 8L14 10" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-building" viewBox="0 0 20 20">
+        <path d="M4 17.5V3.5H12V17.5M12 8H16V17.5M2.5 17.5H17.5" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <path d="M7 7H9M7 10.5H9M7 14H9" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" fill="none" />
+      </symbol>
+      <symbol id="icon-compass" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="7.25" stroke="currentColor" strokeWidth="2.25" fill="none" />
+        <path d="M12.8 7.2L11.2 11.2L7.2 12.8L8.8 8.8Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-users" viewBox="0 0 20 20">
+        <circle cx="7.5" cy="7" r="3" stroke="currentColor" strokeWidth="2.25" fill="none" />
+        <path d="M2.5 17C2.5 13.9 4.7 12 7.5 12S12.5 13.9 12.5 17" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" fill="none" />
+        <path d="M13 4.2A3 3 0 0113 9.8M14.5 12.3C16.3 12.9 17.5 14.6 17.5 17" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" fill="none" />
+      </symbol>
+      <symbol id="icon-layers" viewBox="0 0 20 20">
+        <path d="M10 3L17.5 7L10 11L2.5 7Z" stroke="currentColor" strokeWidth="2.25" strokeLinejoin="round" fill="none" />
+        <path d="M2.5 10.5L10 14.5L17.5 10.5M2.5 14L10 18L17.5 14" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </symbol>
+      <symbol id="icon-plus" viewBox="0 0 20 20">
+        <path d="M10 4V16M4 10H16" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" fill="none" />
+      </symbol>
     </svg>
   );
 }

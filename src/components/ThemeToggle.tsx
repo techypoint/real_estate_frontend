@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { Icon } from "./IconSprite";
 
 /**
- * Two supported themes: Arctic Violet (light, default — no attribute) and
- * Mono + Pop (dark — `data-theme="dark"`). See globals.css :root /
- * :root[data-theme="dark"] for the token blocks this flips between.
+ * Two supported themes: Mono + Pop (dark — `data-theme="dark"`, the default:
+ * the root layout server-renders it) and Arctic Violet (light — no attribute).
+ * See globals.css :root / :root[data-theme="dark"] for the token blocks this
+ * flips between.
  */
 export const THEME_STORAGE_KEY = "theme";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   // ThemeScript (below) already applied the saved theme before first paint;
   // this only syncs React's copy of it, so the icon is right on load.
@@ -48,12 +49,12 @@ export function ThemeToggle() {
 /**
  * Applies the saved theme before first paint.
  *
- * Without this the server-rendered HTML paints in the default light theme
- * and then snaps to dark once React hydrates — a full-page colour flash on
- * every navigation for anyone who picked dark. Has to be a blocking inline
+ * Without this the server-rendered HTML paints in the default dark theme
+ * and then snaps to light once React hydrates — a full-page colour flash on
+ * every navigation for anyone who picked light. Has to be a blocking inline
  * script in <head>; there is no way to read localStorage earlier.
  */
 export function ThemeScript() {
-  const js = `(function(){try{if(localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();`;
+  const js = `(function(){try{if(localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})==="light")document.documentElement.removeAttribute("data-theme");}catch(e){}})();`;
   return <script dangerouslySetInnerHTML={{ __html: js }} />;
 }

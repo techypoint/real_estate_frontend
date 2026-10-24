@@ -72,8 +72,8 @@ unaffected — only the color system gained a second, real palette.
 --border-strong: #cbc2e6;
 
 --text:        #1b1730;
---text-muted:  #6c6591;
---text-faint:  #a49dc4;
+--text-muted:  #5a537f;  /* ≥5.9:1 on every light surface */
+--text-faint:  #706994;  /* ≥4.5:1 on --bg/--surface — it carries real text */
 
 --accent:        #7c5cf0; /* violet — links, primary actions, focus */
 --accent-strong: #6a48e0; /* hover/active — darker on light, not brighter */
@@ -93,7 +93,7 @@ unaffected — only the color system gained a second, real palette.
 
 --text:        #f5f5f5;
 --text-muted:  #9e9e9e;
---text-faint:  #666666;
+--text-faint:  #8a8a8a;  /* ≥5.2:1 on --bg/--surface */
 
 --accent:        #d4ff3f; /* acid lime — links, primary actions, focus */
 --accent-strong: #e3ff70; /* hover/active — brighter on dark, not darker */
@@ -420,3 +420,43 @@ viewer on click, via one shared pair of components
     checked whether it needs *one* shared piece of state across instances
     (like the gallery's prev/next) before reaching for N independent
     copies of a single-item component.
+
+## v5 — premium advisory layer (2026-10-24)
+
+The user asked for a full "wow on landing" redesign, decided autonomously
+("revamp it in auto mode"). Everything above still holds (tokens, two themes,
+sharp radii, two type families, gold reserved for status). What v5 added, all
+in the block at the end of `globals.css`:
+
+- **Homepage** is now photo-led: full-bleed `.home-hero` using the newest
+  project's lead gallery photo behind a fixed dark scrim, a search "console"
+  (`.hero-search`, one native GET form: q + district + type), a glass
+  featured-project card, metric band, spotlight split, 4-step journey, bento
+  "why us" (lead card on `--accent`), photo project cards, type tiles, FAQ
+  (`<details>` + FAQPage JSON-LD), and an `--accent` final-CTA band.
+- **`--accent-bright`** token: accent for text on photography (the base
+  accent is tuned for light surfaces and reads too dim on the scrim).
+- **Project cards** (`.pcard`) are photo-topped and built from
+  `lib/projectView.ts` (`toProjectView` / `withProjectViews`), the one place
+  that picks the cover photo and formats configurations/price/possession.
+- **Scroll reveal** (`.reveal`) is CSS scroll-driven animation
+  (`animation-timeline: view()`), progressive enhancement, no JS.
+- **Chrome**: glass header with a "Talk to an advisor" CTA (≥768px);
+  multi-column footer.
+- The "Full detail" badge and the hasDetail filter are gone — every listed
+  project has full detail now. "Legal Data" is now "Property Information".
+- **Blog** (same pass): `.page-hero` header on the index, newest post as a
+  wide `.bcard-featured`, then `.bgrid` of `.bcard`s with reading time. A
+  post with no hero image gets a typographic cover (lead tag + brand mark),
+  never a stock photo. Articles: larger head, "By AcreInfotech" byline,
+  `--accent` end-of-article CTA. `fmtTag` (BlogCard.tsx) normalises
+  slug-style tags ("up-rera" → "UP RERA").
+
+## v5.2 — dark is the default (2026-10-24)
+
+Explicit user request: "make the dark theme as default". **Mono + Pop (dark)
+is now the default** for first-time visitors; Arctic Violet (light) is the
+opt-in. Supersedes the "Arctic Violet is the default" answer in §1. The root
+layout server-renders `<html data-theme="dark">` (so there's no flash), and
+ThemeScript removes the attribute pre-paint only when localStorage holds
+"light". A visitor who already chose either theme keeps their choice.
