@@ -40,7 +40,7 @@ export function toProjectView(summary: ProjectSummary, project?: Project): Proje
     name,
     // Promoter names are sometimes stored twice, ";"-joined, in two casings.
     developer: summary.promoter_name?.split(";")[0].trim() || undefined,
-    location: [c?.marketing?.locality, c?.marketing?.city ?? summary.district].filter(Boolean).join(", ") || undefined,
+    location: locationLine([c?.marketing?.locality, project?.area?.name, c?.marketing?.city ?? summary.district]),
     type: summary.project_category || summary.project_type,
     status: fmtStatus(c?.marketing?.status) || undefined,
     tagline: c?.marketing?.tagline,
@@ -54,6 +54,23 @@ export function toProjectView(summary: ProjectSummary, project?: Project): Proje
     brochureFile: project?.brochure?.file_name,
   };
 }
+
+/**
+ * "Sector 107, Noida" + area "Noida" + city "Noida" → "Sector 107, Noida".
+ * Curated localities often already name the area or city, so a part is
+ * dropped when an earlier one already says it.
+ */
+export function locationLine(parts: (string | undefined | null)[]): string | undefined {
+  const kept: string[] = [];
+  for (const p of parts) {
+    if (p && !kept.some((k) => mentions(k, p))) kept.push(p);
+  }
+  return kept.join(", ") || undefined;
+}
+
+/** Whether `text` already contains `name` as whole words, ignoring case. */
+export const mentions = (text: string, name: string) =>
+  new RegExp(`(^|[^a-z0-9])${name.toLowerCase().replace(/[^a-z0-9]+/g, "[^a-z0-9]+")}($|[^a-z0-9])`).test(text.toLowerCase());
 
 /**
  * Listing summaries carry no photography, so each card's brochure content is

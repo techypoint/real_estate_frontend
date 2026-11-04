@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { IconSprite } from "@/components/IconSprite";
+import { AttributionCapture } from "@/components/LeadFields";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { ThemeScript } from "@/components/ThemeToggle";
 import { SOCIAL_LINKS } from "@/lib/social";
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="page-body">
         <IconSprite />
+        <AttributionCapture />
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />

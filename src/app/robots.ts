@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         // /projects and would burn crawl budget. AI crawlers are intentionally
         // NOT blocked: project pages are server-rendered with JSON-LD, which is
         // exactly what we want them reading.
-        disallow: ["/api/", "/projects?"],
+        disallow: ["/api/", "/projects?", "/admin"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

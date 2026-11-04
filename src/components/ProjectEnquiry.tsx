@@ -2,19 +2,19 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
+import { submitLead } from "@/lib/leads";
 import { Icon } from "./IconSprite";
+import { LeadFields } from "./LeadFields";
 
 type Status = "idle" | "submitting" | "sent" | "error";
 
 /**
  * The hero's "Enquire Now" button plus the modal it opens.
  *
- * Posts through the same /api/leads BFF route as ContactForm, so there's one
- * lead pipeline, not two. The project reference travels as a nested `project`
- * object rather than flattened fields so it reads unambiguously on the Java
- * side once that endpoint starts persisting it (see docs/detail-page.md,
- * "Known gaps" — the endpoint accepting the field is separate from Java
- * actually storing/using it).
+ * Posts through the same submitLead / /api/leads route as ContactForm, so
+ * there's one lead pipeline, not two. The project reference travels as a
+ * nested `project` object, which Java stores on the lead and puts in the
+ * founder notification email.
  *
  * The button lives inside `.showcase-hero .content`, which pins `--text` to
  * its light-on-dark-photo value for everything under it (see that rule's own
@@ -86,19 +86,10 @@ function EnquiryModal({
     setStatus("submitting");
 
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.get("name"),
-          email: data.get("email"),
-          phone: data.get("phone"),
-          message: data.get("message"),
-          source: "project_detail",
-          project: { registration_no: registrationNo, project_name: projectName },
-        }),
+      await submitLead(data, {
+        source: "project_detail",
+        project: { registration_no: registrationNo, project_name: projectName },
       });
-      if (!res.ok) throw new Error("request failed");
       setStatus("sent");
     } catch {
       setStatus("error");
@@ -130,31 +121,19 @@ function EnquiryModal({
             <Icon name="shield" />
             <div>
               <strong>Thanks — we&rsquo;ve got your enquiry.</strong>
-              <div style={{ marginTop: "4px" }}>Our team will get back to you shortly about {projectName}.</div>
+              <div style={{ marginTop: "4px" }}>Our team will call or WhatsApp you shortly about {projectName}.</div>
             </div>
           </div>
         ) : (
           <form className="contact-form" onSubmit={handleSubmit}>
+            <LeadFields idPrefix="eq" />
             <div className="field">
-              <label htmlFor="eq-name">Name</label>
-              <input id="eq-name" name="name" type="text" required maxLength={200} autoComplete="name" />
-            </div>
-            <div className="field">
-              <label htmlFor="eq-email">Email</label>
-              <input id="eq-email" name="email" type="email" required maxLength={200} autoComplete="email" />
-            </div>
-            <div className="field">
-              <label htmlFor="eq-phone">Phone (optional)</label>
-              <input id="eq-phone" name="phone" type="tel" maxLength={30} autoComplete="tel" />
-            </div>
-            <div className="field">
-              <label htmlFor="eq-message">Message</label>
+              <label htmlFor="eq-message">Message (optional)</label>
               <textarea
                 id="eq-message"
                 name="message"
-                required
                 maxLength={4000}
-                rows={4}
+                rows={3}
                 defaultValue={`I'm interested in ${projectName}.`}
               />
             </div>

@@ -91,8 +91,8 @@ export function SiteFooter() {
             <h2>Explore</h2>
             <Link href="/projects">All projects</Link>
             <Link href="/projects?type=Residential">Residential</Link>
-            <Link href="/projects?type=Commercial">Commercial</Link>
-            <Link href="/projects?type=Plotting">Plots</Link>
+            <Link href="/districts">Districts</Link>
+            <Link href="/builders">Builders</Link>
           </nav>
 
           <nav className="footer-col" aria-label="Company">

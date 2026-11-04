@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import { fmtNum } from "@/lib/format";
@@ -8,6 +9,10 @@ import { Pagination } from "@/components/Pagination";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
 import { SourceNote } from "@/components/SourceNote";
+import { LinkCloud } from "@/components/LeadBand";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { pageHref } from "@/components/ProjectListing";
+import { areaHref, districtHref, liveAreas } from "@/lib/districts";
 
 const TYPES = ["Residential", "Commercial", "Mixed", "Plotting"];
 const LIMIT = 24;
@@ -22,16 +27,20 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   const district = first(sp.district);
   const type = first(sp.type);
 
+  const page = Math.max(1, Math.floor(Number(first(sp.page))) || 1);
   const parts = [type, district && `in ${district}`].filter(Boolean).join(" ");
   const title = q ? `Search: ${q}` : parts ? `${parts} projects` : "Browse Projects";
 
   return {
     title,
     description: `Find ${type || "real estate"} projects${district ? ` in ${district}` : ""} across Uttar Pradesh that fit what you're looking for — floor plans, pricing and amenities on AcreInfotech.`,
-    // Filtered and paginated permutations are near-duplicates; point them at the
-    // clean listing so ranking signals consolidate on one canonical URL.
-    alternates: { canonical: "/projects" },
-    robots: q || Number(first(sp.page)) > 1 ? { index: false, follow: true } : undefined,
+    // Filtered permutations are near-duplicates; point them at the clean
+    // listing so ranking signals consolidate on one canonical URL. Plain
+    // pages 2+ list different projects, so each is its own canonical.
+    // (A district-only filter never gets here — it redirects to the
+    // district page.)
+    alternates: { canonical: district || type || q ? "/projects" : pageHref("/projects", page) },
+    robots: q ? { index: false, follow: true } : undefined,
   };
 }
 
@@ -40,12 +49,20 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
   const q = first(sp.q);
   const district = first(sp.district);
   const type = first(sp.type);
-  const page = Math.max(1, Number(first(sp.page)) || 1);
+  const page = Math.max(1, Math.floor(Number(first(sp.page))) || 1);
 
-  const [result, districts] = await Promise.all([
-    api.listProjects({ q, district, type, page, limit: LIMIT }),
-    api.districts(),
-  ]);
+  const [districts, builders, areas] = await Promise.all([api.districts(), api.builders(), api.areas()]);
+
+  // /projects?district=X on its own is the district page's listing under a
+  // second URL — send it there (also what the search form produces when only
+  // a district is picked). With a search or type on top it stays a filtered
+  // listing.
+  if (district && !q && !type && districts.includes(district)) {
+    permanentRedirect(pageHref(districtHref(district), page));
+  }
+
+  const result = await api.listProjects({ q, district, type, page, limit: LIMIT });
+  if (page > 1 && page > result.pages) notFound();
 
   const views = await withProjectViews(result.items);
 
@@ -78,9 +95,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
     <>
       <section className="page-hero">
         <div className="container">
-          <div className="breadcrumb">
-            <Link href="/">Home</Link> / <span>Projects</span>
-          </div>
+          <Breadcrumbs path="/projects" items={[{ name: "Home", href: "/" }, { name: "Projects" }]} />
           <span className="eyebrow">Homes across Uttar Pradesh</span>
           <h1>{q ? <>Results for &ldquo;{q}&rdquo;</> : "Find a project that fits."}</h1>
           <p>
@@ -163,6 +178,13 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Sea
             </div>
           </div>
         )}
+
+        <LinkCloud
+          title="Browse by area"
+          links={liveAreas(areas).map((a) => ({ href: areaHref(a.district, a.slug), label: a.name }))}
+        />
+        <LinkCloud title="Browse by district" links={districts.map((d) => ({ href: districtHref(d), label: d }))} />
+        <LinkCloud title="Browse by builder" links={builders.map((b) => ({ href: `/builder/${b.slug}`, label: b.name }))} />
 
         <SourceNote />
       </div>

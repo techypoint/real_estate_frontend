@@ -1,4 +1,5 @@
-import type { Blog, PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats } from "./types";
+import { regToken } from "./slug";
+import type { AreaSummary, Blog, BuilderSummary, PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats } from "./types";
 
 /**
  * Client for the Java backend.
@@ -55,8 +56,12 @@ function qs(params: Record<string, string | number | boolean | undefined>) {
 export type ListParams = {
   q?: string;
   district?: string;
+  /** Area slug — only meaningful together with `district`. */
+  area?: string;
   type?: string;
   hasDetail?: boolean;
+  /** Builder slug — see the Java BuilderDirectory. */
+  builder?: string;
   page?: number;
   limit?: number;
 };
@@ -65,8 +70,9 @@ export const api = {
   listProjects: (params: ListParams = {}) =>
     apiGet<PageResponse<ProjectSummary>>(`/api/projects${qs(params)}`, { revalidate: REVALIDATE.list }),
 
+  /** Takes the stored registration number; sent in its URL form since a "/" can't go in a path segment. */
   getProject: (registrationNo: string) =>
-    apiGet<Project>(`/api/projects/${encodeURIComponent(registrationNo)}`, {
+    apiGet<Project>(`/api/projects/${encodeURIComponent(regToken(registrationNo))}`, {
       revalidate: REVALIDATE.project,
       tags: [`project:${registrationNo}`],
     }),
@@ -75,7 +81,15 @@ export const api = {
 
   stats: () => apiGet<Stats>("/api/projects/meta/stats", { revalidate: REVALIDATE.list }),
 
-  /** Registration number + name of published projects — feeds the URL slug and generateStaticParams. */
+  /** The whole areas master list, with counts — see lib/districts.ts liveAreas(). */
+  areas: () => apiGet<AreaSummary[]>("/api/areas", { revalidate: REVALIDATE.list }),
+
+  builders: () => apiGet<BuilderSummary[]>("/api/builders", { revalidate: REVALIDATE.list }),
+
+  getBuilder: (slug: string) =>
+    apiGet<BuilderSummary>(`/api/builders/${encodeURIComponent(slug)}`, { revalidate: REVALIDATE.list }),
+
+  /** Registration number + name of visible projects — feeds the URL slug, generateStaticParams and the sitemap. */
   publishedProjectRefs: () =>
     apiGet<PublishedProjectRef[]>("/api/projects/meta/published", { revalidate: REVALIDATE.list }),
 

@@ -152,6 +152,10 @@ export type Project = {
   detail?: Record<string, Record<string, string>[]>;
   documents?: ProjectDocument[];
   brochure?: ProjectBrochure;
+  /** Builder the promoter maps to (Java BuilderDirectory) — links to /builder/[slug]. */
+  builder?: BuilderRef;
+  /** Area from the areas master list, when one is set — links to its area page. */
+  area?: AreaRef;
   has_detail?: boolean;
   content?: ProjectContent;
 };
@@ -168,7 +172,10 @@ export type ProjectSummary = Pick<
   | "has_detail"
   | "declared_completion_date"
   | "registration_date"
->;
+> & {
+  /** Area slug (see AreaSummary) — the detail endpoint returns it as an AreaRef instead. */
+  area?: string;
+};
 
 export type PageResponse<T> = {
   items: T[];
@@ -182,6 +189,16 @@ export type Stats = { total: number; withDetail: number; listed: number; distric
 
 /** One entry from `/api/projects/meta/published` — feeds the URL slug and generateStaticParams. */
 export type PublishedProjectRef = { registration_no: string; name: string };
+
+export type BuilderRef = { slug: string; name: string };
+
+export type AreaRef = { slug: string; name: string };
+
+/** One entry of the areas master list (GET /api/areas); projectCount 0 = no page yet. */
+export type AreaSummary = { district: string; slug: string; name: string; projectCount: number };
+
+/** A builder with at least one visible project — see the Java BuilderController. */
+export type BuilderSummary = BuilderRef & { projectCount: number };
 
 /**
  * A blog post from the Java Blog API, written by the content pipeline in

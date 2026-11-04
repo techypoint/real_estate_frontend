@@ -1,15 +1,19 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { submitLead } from "@/lib/leads";
 import { Icon } from "./IconSprite";
+import { LeadFields } from "./LeadFields";
 
 type Status = "idle" | "submitting" | "sent" | "error";
 
 /**
- * Posts to the Next BFF route (/api/leads), which forwards to the Java lead
- * endpoint — same pipeline chat-sourced leads will use later (CLAUDE.md).
+ * Posts to the Next BFF route (/api/leads) via submitLead, which forwards to
+ * the Java lead endpoint — same pipeline chat-sourced leads will use later
+ * (CLAUDE.md).
  */
-export function ContactForm() {
+/** `source` records which page the lead came from (contact page, a district page, a builder page). */
+export function ContactForm({ source = "contact_page" }: { source?: string }) {
   const [status, setStatus] = useState<Status>("idle");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -19,17 +23,7 @@ export function ContactForm() {
     setStatus("submitting");
 
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.get("name"),
-          email: data.get("email"),
-          phone: data.get("phone"),
-          message: data.get("message"),
-        }),
-      });
-      if (!res.ok) throw new Error("request failed");
+      await submitLead(data, { source });
       setStatus("sent");
       form.reset();
     } catch {
@@ -43,7 +37,7 @@ export function ContactForm() {
         <Icon name="shield" />
         <div>
           <strong>Thanks — we&rsquo;ve got your message.</strong>
-          <div style={{ marginTop: "4px" }}>Our team will get back to you shortly.</div>
+          <div style={{ marginTop: "4px" }}>Our team will call or WhatsApp you shortly.</div>
         </div>
       </div>
     );
@@ -51,21 +45,10 @@ export function ContactForm() {
 
   return (
     <form className="contact-form" onSubmit={handleSubmit}>
+      <LeadFields idPrefix="cf" />
       <div className="field">
-        <label htmlFor="cf-name">Name</label>
-        <input id="cf-name" name="name" type="text" required maxLength={200} autoComplete="name" />
-      </div>
-      <div className="field">
-        <label htmlFor="cf-email">Email</label>
-        <input id="cf-email" name="email" type="email" required maxLength={200} autoComplete="email" />
-      </div>
-      <div className="field">
-        <label htmlFor="cf-phone">Phone (optional)</label>
-        <input id="cf-phone" name="phone" type="tel" maxLength={30} autoComplete="tel" />
-      </div>
-      <div className="field">
-        <label htmlFor="cf-message">Message</label>
-        <textarea id="cf-message" name="message" required maxLength={4000} rows={5} />
+        <label htmlFor="cf-message">Message (optional)</label>
+        <textarea id="cf-message" name="message" maxLength={4000} rows={5} />
       </div>
 
       {status === "error" && (

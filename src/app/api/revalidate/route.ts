@@ -1,7 +1,7 @@
 import { revalidateTag, revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { api } from "@/lib/api";
-import { projectSlug } from "@/lib/slug";
+import { projectSlug, regToken } from "@/lib/slug";
 
 /**
  * On-demand ISR hook.
@@ -58,14 +58,14 @@ export async function POST(request: Request) {
   // Invalidate first so the lookup below can't return a stale cached name.
   revalidateTag(`project:${reg}`);
 
-  let slug = reg;
+  let slug = regToken(reg);
   try {
     const project = await api.getProject(reg);
     const name = project.content?.marketing?.display_name || project.project_name || reg;
     slug = projectSlug(name, reg);
   } catch {
     // Deleted/unpublished since the webhook fired — fall back to the bare
-    // registration number so a page cached at that path still clears.
+    // registration number (URL form) so a page cached at that path still clears.
   }
 
   revalidatePath(`/project/${slug}`);

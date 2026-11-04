@@ -11,8 +11,11 @@ import { Icon } from "@/components/IconSprite";
 import { SourceNote } from "@/components/SourceNote";
 import { ProjectEnquiry } from "@/components/ProjectEnquiry";
 import { RERA_BADGE_LABEL } from "@/lib/copy";
+import { mentions } from "@/lib/projectView";
 import type { Project } from "@/lib/types";
 import { projectSlug, regFromSlug } from "@/lib/slug";
+import { areaHref, districtHref } from "@/lib/districts";
+import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 
 /**
  * Short, non-data UI copy only — never a project fact. One line per content
@@ -118,7 +121,7 @@ function JsonLd({ project }: { project: Project }) {
     address: {
       "@type": "PostalAddress",
       streetAddress: project.project_address || undefined,
-      addressLocality: c?.marketing?.locality || project.district,
+      addressLocality: c?.marketing?.locality || project.area?.name || project.district,
       addressRegion: project.state || "Uttar Pradesh",
       addressCountry: "IN",
     },
@@ -174,6 +177,24 @@ export default async function ProjectPage({ params }: { params: Params }) {
   const canonicalSlug = projectSlug(displayName, project.registration_no);
   if (slug !== canonicalSlug) permanentRedirect(`/project/${canonicalSlug}`);
 
+  // Curated locality and city often already name the area ("Sector-22D,
+  // Yamuna Expressway"; city "Noida" in area Noida), so the hero's location
+  // line skips whichever part an earlier one already says — the breadcrumb
+  // still links the area either way.
+  const locality = c?.marketing?.locality;
+  const curatedCity = c?.marketing?.city;
+  const city =
+    curatedCity && !mentions(locality ?? "", curatedCity) && !(project.area && mentions(project.area.name, curatedCity))
+      ? curatedCity
+      : undefined;
+
+  const crumbs: Crumb[] = [{ name: "Home", href: "/" }, { name: "Projects", href: "/projects" }];
+  if (project.district) {
+    crumbs.push({ name: project.district, href: districtHref(project.district) });
+    if (project.area) crumbs.push({ name: project.area.name, href: areaHref(project.district, project.area.slug) });
+  }
+  crumbs.push({ name: displayName });
+
   // Two intents, two tabs (see the design brief): Overview sells the project
   // — brochure content only. Property Information is the UP-RERA compliance record —
   // documents, promoter, bank accounts, land records, agents. They no longer
@@ -208,9 +229,27 @@ export default async function ProjectPage({ params }: { params: Params }) {
           )}
           <h1>{displayName}</h1>
           <div className="loc">
-            {[project.promoter_name?.split(";")[0].trim(), c?.marketing?.locality, c?.marketing?.city ?? project.district]
+            {/* Builder, area and district link to their browse pages — the
+                internal links that let search engines (and buyers) walk
+                project ↔ builder ↔ area ↔ district. */}
+            {[
+              project.builder ? (
+                <Link key="b" href={`/builder/${project.builder.slug}`}>{project.builder.name}</Link>
+              ) : (
+                project.promoter_name?.split(";")[0].trim()
+              ),
+              locality,
+              project.district && project.area && !mentions(locality ?? "", project.area.name) && (
+                <Link key="a" href={areaHref(project.district, project.area.slug)}>{project.area.name}</Link>
+              ),
+              project.district && !city ? (
+                <Link key="d" href={districtHref(project.district)}>{project.district}</Link>
+              ) : (
+                city
+              ),
+            ]
               .filter(Boolean)
-              .join(" — ")}
+              .flatMap((part, i) => (i ? [" — ", part] : [part]))}
           </div>
           {c?.marketing?.tagline && <div className="tagline">{c.marketing.tagline}</div>}
 
@@ -315,10 +354,7 @@ export default async function ProjectPage({ params }: { params: Params }) {
       )}
 
       <div className="container">
-        <div className="breadcrumb">
-          <Link href="/">Home</Link> / <Link href="/projects">Projects</Link> /{" "}
-          <span>{displayName}</span>
-        </div>
+        <Breadcrumbs path={`/project/${canonicalSlug}`} items={crumbs} />
 
         {hero}
 

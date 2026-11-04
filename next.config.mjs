@@ -27,6 +27,15 @@ const nextConfig = {
   // The design system is hand-written global CSS ported verbatim from the
   // previous build; no CSS-in-JS runtime is involved.
   poweredByHeader: false,
+
+  // The bare collection paths have no page of their own — send them to the
+  // index pages instead of a 404 (people trim URLs back to these).
+  async redirects() {
+    return [
+      { source: "/district", destination: "/districts", permanent: true },
+      { source: "/builder", destination: "/builders", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

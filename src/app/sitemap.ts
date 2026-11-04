@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
 import { api } from "@/lib/api";
 import { projectSlug } from "@/lib/slug";
+import { areaHref, districtHref, liveAreas } from "@/lib/districts";
 
 const SITE_URL = process.env.SITE_URL ?? "https://acreinfotech.com";
 
 /**
- * Every published project gets a sitemap entry.
+ * Every visible project, district, area and builder page gets a sitemap
+ * entry — the API applies the site's visibility rule, so hidden projects (and
+ * districts/areas/builders with nothing visible) never reach the sitemap.
  *
  * Filtered listing URLs are deliberately excluded — they are near-duplicates
  * that already carry a canonical back to /projects, and submitting them would
@@ -37,9 +40,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/projects`, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/blog`, changeFrequency: "daily", priority: 0.7 },
+    { url: `${SITE_URL}/districts`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/builders`, changeFrequency: "weekly", priority: 0.6 },
   ];
 
-  const [projectUrls, blogUrls] = await Promise.all([
+  const [projectUrls, blogUrls, districtUrls, areaUrls, builderUrls] = await Promise.all([
     api
       .publishedProjectRefs()
       .then((refs) =>
@@ -51,7 +56,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       )
       .catch(() => [] as MetadataRoute.Sitemap),
     allBlogUrls().catch(() => [] as MetadataRoute.Sitemap),
+    api
+      .districts()
+      .then((ds) => ds.map((d) => ({ url: `${SITE_URL}${districtHref(d)}`, changeFrequency: "daily" as const, priority: 0.8 })))
+      .catch(() => [] as MetadataRoute.Sitemap),
+    api
+      .areas()
+      .then((as) =>
+        liveAreas(as).map((a) => ({
+          url: `${SITE_URL}${areaHref(a.district, a.slug)}`,
+          changeFrequency: "daily" as const,
+          priority: 0.8,
+        })),
+      )
+      .catch(() => [] as MetadataRoute.Sitemap),
+    api
+      .builders()
+      .then((bs) => bs.map((b) => ({ url: `${SITE_URL}/builder/${b.slug}`, changeFrequency: "weekly" as const, priority: 0.7 })))
+      .catch(() => [] as MetadataRoute.Sitemap),
   ]);
 
-  return [...base, ...projectUrls, ...blogUrls];
+  return [...base, ...districtUrls, ...areaUrls, ...builderUrls, ...projectUrls, ...blogUrls];
 }

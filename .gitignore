@@ -14,3 +14,4 @@ npm-debug.log*
 
 # run.sh runtime artifact — per-machine, not source
 frontend.log
+/mongo-sync/

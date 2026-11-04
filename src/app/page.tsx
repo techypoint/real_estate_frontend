@@ -6,6 +6,9 @@ import { withProjectViews, type ProjectView } from "@/lib/projectView";
 import { ProjectCard } from "@/components/ProjectCard";
 import { BottomNav } from "@/components/SiteChrome";
 import { Icon } from "@/components/IconSprite";
+import { LinkCloud } from "@/components/LeadBand";
+import { areaHref, liveAreas } from "@/lib/districts";
+import type { AreaSummary } from "@/lib/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -51,10 +54,11 @@ const FAQS = [
 export default async function HomePage() {
   // All three are cached and revalidated independently; running them in
   // parallel keeps TTFB at the slowest one rather than their sum.
-  const [stats, recent, districts] = await Promise.all([
+  const [stats, recent, districts, areas] = await Promise.all([
     api.stats(),
     api.listProjects({ limit: 6 }),
     api.districts().catch(() => [] as string[]),
+    api.areas().catch(() => [] as AreaSummary[]),
   ]);
   const projects = await withProjectViews(recent.items);
 
@@ -260,6 +264,13 @@ export default async function HomePage() {
               No projects listed yet.
             </div>
           )}
+
+          {/* Buyers search by area ("Noida", "Yamuna Expressway"), not by
+              district — only areas with a live project are listed. */}
+          <LinkCloud
+            title="Browse by area"
+            links={liveAreas(areas).map((a) => ({ href: areaHref(a.district, a.slug), label: a.name }))}
+          />
 
           <div className="type-tiles">
             {TYPES.map((t) => (
