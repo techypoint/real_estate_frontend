@@ -1,3 +1,4 @@
+import { fitDescription, fitTitle } from "@/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -88,20 +89,30 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const where = [c?.marketing?.locality, c?.marketing?.city ?? project.district].filter(Boolean).join(", ");
   const bhks = [...new Set((c?.unit_types ?? []).map((u) => u.bhk))].sort();
 
-  const description = [
-    `${name}${where ? ` in ${where}` : ""}.`,
-    bhks.length ? `${bhks.join(" & ")} BHK.` : "",
-    `RERA ${project.registration_no}.`,
-    "Floor plans, configurations and the documents filed with UP-RERA.",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const description = fitDescription(
+    [
+      `${name}${where ? ` in ${where}` : ""}.`,
+      bhks.length ? `${bhks.join(" & ")} BHK.` : "",
+      `RERA ${project.registration_no}.`,
+      "Floor plans and UP-RERA documents.",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+
+  // The title carries the name plus as much of the place as still fits.
+  const title = fitTitle(name, [c?.marketing?.locality, c?.marketing?.city ?? project.district]);
+  // A real photo of the project beats the generic brand card; with none, the
+  // root opengraph-image is used.
+  const photo = c?.gallery?.find((m) => m.url)?.url;
+  const images = photo ? [photo] : undefined;
 
   return {
-    title: `${name}${where ? ` — ${where}` : ""}`,
+    title,
     description,
     alternates: { canonical: `/project/${projectSlug(name, project.registration_no)}` },
-    openGraph: { title: name, description, type: "article" },
+    openGraph: { title, description, type: "article", images },
+    twitter: images ? { card: "summary_large_image", title, description, images } : undefined,
   };
 }
 

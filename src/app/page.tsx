@@ -14,9 +14,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Find Your Next Home — Real Estate Projects in Uttar Pradesh",
   description:
-    "We help you buy the right home in Uttar Pradesh — explore new projects matched to your budget, configuration and timeline, with independent guidance from search to keys.",
+    "Buy the right home in Uttar Pradesh — new projects matched to your budget, configuration and timeline, with independent guidance from search to keys.",
   alternates: { canonical: "/" },
 };
+
+const SITE_URL = process.env.SITE_URL ?? "https://acreinfotech.com";
 
 const TYPES = [
   { type: "Residential", icon: "home", blurb: "Apartments, penthouses and villas to call home." },
@@ -319,6 +321,32 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebSite",
+                "@id": `${SITE_URL}/#website`,
+                name: "AcreInfotech",
+                url: SITE_URL,
+                inLanguage: "en-IN",
+              },
+              {
+                "@type": "RealEstateAgent",
+                "@id": `${SITE_URL}/#agent`,
+                name: "AcreInfotech",
+                url: SITE_URL,
+                logo: `${SITE_URL}/acreinfotech-appicon-dark-512w.png`,
+                areaServed: { "@type": "AdministrativeArea", name: "Uttar Pradesh, India" },
+              },
+            ],
+          }),
+        }}
+      />
 
       <script
         type="application/ld+json"

@@ -1,3 +1,4 @@
+import { fitDescription, fitTitle } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { api } from "@/lib/api";
@@ -36,8 +37,10 @@ export async function generateMetadata({ params, searchParams }: { params: Param
   const page = pageNum(await searchParams);
 
   return {
-    title: `New Projects in ${area.name}, ${district} — RERA-Registered`,
-    description: `RERA-registered projects in ${area.name}, ${district}, Uttar Pradesh — floor plans, brochures, builder details and possession dates. Enquire for price, availability and a site visit.`,
+    title: fitTitle(`New Projects in ${area.name}`, [district]),
+    description: fitDescription(
+      `RERA-registered projects in ${area.name}, ${district}, Uttar Pradesh — floor plans, brochures, builders and possession dates. Enquire for price and a site visit.`,
+    ),
     alternates: { canonical: pageHref(areaHref(district, area.slug), page) },
   };
 }

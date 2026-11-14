@@ -1,3 +1,4 @@
+import { fitDescription, fitTitle } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { api, ApiError } from "@/lib/api";
@@ -37,8 +38,10 @@ export async function generateMetadata({ params, searchParams }: { params: Param
   const page = pageNum(await searchParams);
 
   return {
-    title: `${builder.name} Projects — RERA Registrations, Brochures & Floor Plans`,
-    description: `All ${builder.name} projects listed on AcreInfotech: RERA registration numbers, brochures, floor plans and possession dates. Enquire for price, availability and a site visit.`,
+    title: fitTitle(`${builder.name} Projects`, ["RERA & Floor Plans"]),
+    description: fitDescription(
+      `All ${builder.name} projects on AcreInfotech: RERA numbers, brochures, floor plans and possession dates. Enquire for price and a site visit.`,
+    ),
     alternates: { canonical: pageHref(`/builder/${builder.slug}`, page) },
   };
 }
