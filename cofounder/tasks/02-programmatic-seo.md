@@ -115,3 +115,5 @@ Issues (fix before launch — nothing meaningful indexed yet, so changes are fre
 | 2026-10-25 | Founder confirmed both areas (ATS Allure → Yamuna Expressway, Mahagun Medalleo → Noida). |
 | 2026-10-25 | Note: robots.txt disallows `/projects?`, so `/projects?page=2+` can't be crawled despite its self-canonical — projects stay reachable via district/area/builder pages; revisit if /projects pagination matters. |
 | 2026-10-25 | Areas/builders now managed in the admin panel (Task 14); local DB re-imported from seed via the panel API. |
+| 2026-11-05 | Founder: deployed to prod. |
+| 2026-11-09 | Added curated builder **Max Estates** (`^max estates\b`, slug `max-estates`) via the admin API on the local DB + seed `builders.json`, so Estate 105 (MAX ESTATES NOIDA PVT LTD) and Estate 128 (Max Estates 128 PVT LTD) share one builder page. Prod still needs it (admin panel, or the Mongo sync). |

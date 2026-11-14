@@ -68,7 +68,7 @@ That's the founder's biggest time sink, and every project we publish is a page t
 - [x] Tested on a production build: login (wrong + right), board filters, set/clear area, reorder, duplicate refused with reason, logout; mobile + desktop screenshots
 - [x] Founder: login set in `.env.local` (`ADMIN_USERNAME` / `ADMIN_PASSWORD`)
 - [x] Local DB: areas (6) + builders (10) imported via the admin API from the seed JSON — matched what the old scripts had loaded (0 added, all updated)
-- [ ] Deploy: backend, then frontend with `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `ADMIN_API_SECRET` (= `app.admin-secret`)
+- [x] Deploy: backend, then frontend with `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `ADMIN_API_SECRET` (= `app.admin-secret`)
 - [ ] One-time on prod: /admin/areas → Import JSON (data/areas.json), /admin/builders → Import JSON (data/builders.json), set areas of the 2 live projects
 
 ## Not in phase 1 (by design)
@@ -89,3 +89,6 @@ That's the founder's biggest time sink, and every project we publish is a page t
 | 2026-10-25 | Founder: login simplified — username `varun` + plain password in the env file (`ADMIN_USERNAME` / `ADMIN_PASSWORD`), no hashing; `npm run admin:password` removed. Unauthenticated write endpoints: won't fix for now. |
 | 2026-10-25 | Confirmed: local panel → local backend (:8888, `local` profile) → local Mongo (localhost:27017); prod panel → prod Mongo. Seed areas + builders imported into local DB via the admin API. |
 | 2026-11-04 | Added search suggestions on the pipeline board (see checklist). Results come in backend order, not by match quality — rank prefix matches first in `adminPipeline` if it becomes a problem. Founder committing manually. |
+| 2026-11-05 | Founder decision: backend repo is private; prod uses the same `app.admin-secret` / `app.revalidate-secret` as local (no rotation, no env-var move). Accepted risk: repo or laptop access = prod admin API access. |
+| 2026-11-05 | Founder: prod setup/deploy done (backend + frontend). |
+| 2026-11-05 | Founder: no UI for the scripts — runs them on laptop from `real_estate_scripts`. Cleaned that repo: removed the browser extension/userscript, old file-based importers (`import_rera.*`, `download_files.py`, `merge_details.py`, `fetch_details.py`), `migrate_to_r2.mjs`, `lib/r2.mjs`, `@aws-sdk` dep, stale data outputs and `crawler/data/brochure_work/`; README rewritten to the 5-step flow. Uncommitted in that repo (founder commits). |

@@ -12,7 +12,7 @@ Update that file as work happens; keep this index's status column in sync.
 | 0 | Agency deal terms | done | [00-agency-deal.md](tasks/00-agency-deal.md) |
 | 1 | Lead capture & tracking | done | [01-lead-capture.md](tasks/01-lead-capture.md) |
 | 2 | Programmatic SEO pages | in-progress | [02-programmatic-seo.md](tasks/02-programmatic-seo.md) |
-| 3 | Onboard agency projects | proposed | [03-onboard-agency-projects.md](tasks/03-onboard-agency-projects.md) |
+| 3 | Populate latest UP-RERA projects (was: Onboard agency projects) | ongoing (founder) | [03-onboard-agency-projects.md](tasks/03-onboard-agency-projects.md) |
 | 4 | Trust content + reels | proposed | [04-trust-content-reels.md](tasks/04-trust-content-reels.md) |
 | 5 | Free tools | proposed | [05-free-tools.md](tasks/05-free-tools.md) |
 | 6 | Paid ads test | proposed | [06-paid-ads-test.md](tasks/06-paid-ads-test.md) |
