@@ -131,4 +131,25 @@ export type AdminArea = {
   live: number;
 };
 
+/** Generated area / builder text — a waiting draft and/or the live copy (Java AdminContentController). */
+export type ContentDoc = {
+  text: string;
+  faq: { q: string; a: string }[];
+  sources: { label: string; url: string }[];
+  asOf: string;
+  savedAt?: string;
+  savedBy?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+};
+
+export type AdminContentItem = {
+  kind: "area" | "builder";
+  district?: string;
+  slug: string;
+  name: string;
+  draft?: ContentDoc;
+  approved?: ContentDoc;
+};
+
 export type AdminBuilder = { id: string; slug: string; name: string; match: string[]; live: number };

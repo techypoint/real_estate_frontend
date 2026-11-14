@@ -1910,3 +1910,14 @@ footer.site-footer { text-align: left; padding: var(--sp-16) 0 var(--sp-6); font
 .compare-table tbody th { font-weight: 700; }
 .compare-table td { font-variant-numeric: tabular-nums; }
 .listing-facts-note { margin-top: var(--sp-3); font-size: var(--text-xs); color: var(--text-faint); }
+
+/* ---------- Reviewed guide / blurb + FAQ on area and builder pages ---------- */
+.entity-guide { margin: var(--sp-10) 0; max-width: 72ch; }
+.entity-guide p { color: var(--text-muted); line-height: 1.7; }
+.entity-faq { margin-top: var(--sp-6); }
+.entity-faq dt { font-weight: 700; margin-top: var(--sp-4); }
+.entity-faq dd { margin: var(--sp-1) 0 0; color: var(--text-muted); line-height: 1.7; }
+.entity-sources { margin-top: var(--sp-6); font-size: var(--text-xs); color: var(--text-faint); }
+.entity-sources a { text-decoration: underline; }
+.adm-content-form { max-width: 760px; }
+.adm-actions-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); }

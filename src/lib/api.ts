@@ -1,5 +1,5 @@
 import { regToken } from "./slug";
-import type { AreaSummary, Blog, BuilderSummary, PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats } from "./types";
+import type { EntityContent, AreaSummary, Blog, BuilderSummary, PageResponse, Project, ProjectSummary, PublishedProjectRef, Stats } from "./types";
 
 /**
  * Client for the Java backend.
@@ -83,6 +83,16 @@ export const api = {
 
   /** The whole areas master list, with counts — see lib/districts.ts liveAreas(). */
   areas: () => apiGet<AreaSummary[]>("/api/areas", { revalidate: REVALIDATE.list }),
+
+  /**
+   * Approved text for an area page, or null. A missing or failing content
+   * endpoint must never break the page, so every failure is "no text".
+   */
+  areaContent: (district: string, slug: string) =>
+    apiGet<EntityContent>(`/api/content/live/area${qs({ district, slug })}`, { revalidate: REVALIDATE.list }).catch(() => null),
+
+  builderContent: (slug: string) =>
+    apiGet<EntityContent>(`/api/content/live/builder${qs({ slug })}`, { revalidate: REVALIDATE.list }).catch(() => null),
 
   builders: () => apiGet<BuilderSummary[]>("/api/builders", { revalidate: REVALIDATE.list }),
 

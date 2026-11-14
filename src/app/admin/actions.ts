@@ -112,6 +112,78 @@ export async function setProjectPublished(fd: FormData) {
   });
 }
 
+// ---- generated area / builder text ----------------------------------------------
+
+/** "Q: …\nA: …" blocks separated by a blank line → FAQ entries. */
+function parseFaq(raw: string) {
+  return raw
+    .split(/\n{2,}/)
+    .map((b) => b.trim())
+    .filter(Boolean)
+    .map((block) => {
+      const m = block.match(/^Q:\s*(.+?)\s*\nA:\s*([\s\S]+)$/);
+      if (!m) throw new AdminApiError("Each FAQ must be a line starting Q: and the next line starting A:, with a blank line between FAQs.", 400);
+      return { q: m[1].trim(), a: m[2].trim() };
+    });
+}
+
+/** One source per line: "Label | https://…". */
+function parseSources(raw: string) {
+  return raw
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const i = line.lastIndexOf("|");
+      if (i < 0) throw new AdminApiError("Each source must be \"Label | https://…\".", 400);
+      return { label: line.slice(0, i).trim(), url: line.slice(i + 1).trim() };
+    });
+}
+
+const contentRef = (fd: FormData) => ({
+  kind: text(fd, "kind"),
+  district: text(fd, "district") || undefined,
+  slug: text(fd, "slug"),
+});
+
+const contentBody = (fd: FormData) => ({
+  ...contentRef(fd),
+  text: text(fd, "text"),
+  faq: parseFaq(text(fd, "faq")),
+  sources: parseSources(text(fd, "sources")),
+  asOf: text(fd, "asOf"),
+});
+
+export async function saveContentDraft(fd: FormData) {
+  await run(fd, async () => {
+    await adminFetch("/content/draft", { method: "PUT", body: contentBody(fd) });
+    return "Draft saved.";
+  });
+}
+
+/** Saves what is on screen as the draft, then approves exactly that — so what was read is what goes live. */
+export async function approveContent(fd: FormData) {
+  await run(fd, async () => {
+    await adminFetch("/content/draft", { method: "PUT", body: contentBody(fd) });
+    await adminFetch("/content/approve", { method: "POST", body: contentRef(fd) });
+    return "Approved — it shows on the site within about 5 minutes.";
+  });
+}
+
+export async function discardContent(fd: FormData) {
+  await run(fd, async () => {
+    await adminFetch("/content/discard", { method: "POST", body: contentRef(fd) });
+    return "Draft discarded.";
+  });
+}
+
+export async function unpublishContent(fd: FormData) {
+  await run(fd, async () => {
+    await adminFetch("/content/unpublish", { method: "POST", body: contentRef(fd) });
+    return "Taken down — it leaves the site within about 5 minutes.";
+  });
+}
+
 // ---- areas ---------------------------------------------------------------------
 
 export async function saveArea(fd: FormData) {

@@ -15,6 +15,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             <Link href="/admin">Projects</Link>
             <Link href="/admin/areas">Areas</Link>
             <Link href="/admin/builders">Builders</Link>
+            <Link href="/admin/content">Page text</Link>
             <Link href="/admin/history">History</Link>
           </nav>
           <form action={logout} className="adm-user">

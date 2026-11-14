@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { areaHref, districtHref, liveAreas, resolveDistrict } from "@/lib/districts";
 import { fmtNum } from "@/lib/format";
 import { ListingFacts } from "@/components/ListingFacts";
+import { EntityGuide } from "@/components/EntityGuide";
 import { ProjectListing, pageHref, pageNum } from "@/components/ProjectListing";
 import { LeadBand, LinkCloud } from "@/components/LeadBand";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -53,7 +54,7 @@ export default async function AreaPage({ params, searchParams }: { params: Param
   const { district, area } = found;
 
   const page = pageNum(sp);
-  const [areas, builders] = await Promise.all([api.areas(), api.builders()]);
+  const [areas, builders, guide] = await Promise.all([api.areas(), api.builders(), api.areaContent(district, area.slug)]);
   const href = areaHref(district, area.slug);
 
   return (
@@ -82,6 +83,8 @@ export default async function AreaPage({ params, searchParams }: { params: Param
         <ProjectListing filter={{ district, area: area.slug }} page={page} basePath={href} />
 
         <ListingFacts filter={{ district, area: area.slug }} label={area.name} page={page} />
+
+        {page === 1 && <EntityGuide title={`${area.name} area guide`} content={guide} />}
 
         <LeadBand
           title={`Looking for a home in ${area.name}?`}

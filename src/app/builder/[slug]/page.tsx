@@ -5,6 +5,7 @@ import { api, ApiError } from "@/lib/api";
 import { districtHref } from "@/lib/districts";
 import { fmtNum } from "@/lib/format";
 import { ListingFacts } from "@/components/ListingFacts";
+import { EntityGuide } from "@/components/EntityGuide";
 import { ProjectListing, pageHref, pageNum } from "@/components/ProjectListing";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LeadBand, LinkCloud } from "@/components/LeadBand";
@@ -53,7 +54,7 @@ export default async function BuilderPage({ params, searchParams }: { params: Pa
   if (!builder) notFound();
 
   const page = pageNum(sp);
-  const [builders, districts] = await Promise.all([api.builders(), api.districts()]);
+  const [builders, districts, about] = await Promise.all([api.builders(), api.districts(), api.builderContent(builder.slug)]);
 
   return (
     <>
@@ -76,6 +77,8 @@ export default async function BuilderPage({ params, searchParams }: { params: Pa
         <ProjectListing filter={{ builder: builder.slug }} page={page} basePath={`/builder/${builder.slug}`} />
 
         <ListingFacts filter={{ builder: builder.slug }} label={builder.name} page={page} showBuilder={false} />
+
+        {page === 1 && <EntityGuide title={`About ${builder.name}`} content={about} />}
 
         <LeadBand
           title={`Interested in a ${builder.name} project?`}

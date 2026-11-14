@@ -199,6 +199,15 @@ export type AreaRef = { slug: string; name: string };
 /** One entry of the areas master list (GET /api/areas); projectCount 0 = no page yet. */
 export type AreaSummary = { district: string; slug: string; name: string; projectCount: number };
 
+/** Reviewed, sourced page text for an area or curated builder (GET /api/content/live/{kind}). Plain text. */
+export type EntityContent = {
+  text: string;
+  faq: { q: string; a: string }[];
+  sources: { label: string; url: string }[];
+  /** YYYY-MM-DD the facts were checked against sources. */
+  asOf: string;
+};
+
 /** A builder with at least one visible project — see the Java BuilderController. */
 export type BuilderSummary = BuilderRef & { projectCount: number };
 
