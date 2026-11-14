@@ -121,6 +121,8 @@ function Documents({ docs }: { docs?: ProjectDocument[] }) {
                 View
               </a>
             </span>
+          ) : d.not_applicable ? (
+            <span className="badge">Not applicable</span>
           ) : (
             <span className="badge">Unavailable</span>
           )}
@@ -139,7 +141,7 @@ export function buildReraSections(p: Project): RenderedSection[] {
   sections.push({
     id: "sec-documents",
     title: "Documents",
-    count: p.documents?.length ?? 0,
+    count: p.documents?.filter((d) => !d.not_applicable).length ?? 0,
     node: <Documents docs={p.documents} />,
   });
 

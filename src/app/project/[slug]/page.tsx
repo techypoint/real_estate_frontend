@@ -272,7 +272,22 @@ export default async function ProjectPage({ params }: { params: Params }) {
                 ) : (
                   <button className="btn btn-outline" type="button" disabled title="Coming soon">Download Brochure</button>
                 )}
-                <ProjectEnquiry registrationNo={project.registration_no} projectName={displayName} />
+                <ProjectEnquiry
+                  registrationNo={project.registration_no}
+                  projectName={displayName}
+                  context={{
+                    cover: heroImage?.url ? { url: heroImage.url, alt: heroImage.alt } : undefined,
+                    developer: project.builder?.name ?? project.promoter_name?.split(";")[0].trim(),
+                    verified: project.has_detail,
+                    facts: [
+                      { label: "Homes", value: configurations ?? "" },
+                      { label: "Possession", value: fmtMonth(c?.marketing?.possession_on) },
+                      { label: "Land parcel", value: fmtMeasure(c?.scale?.land_area) },
+                    ].filter((f) => f.value),
+                    brochureUrl: project.brochure?.url,
+                    brochureFile: project.brochure?.file_name,
+                  }}
+                />
               </div>
             </div>
           </div>

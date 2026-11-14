@@ -119,6 +119,8 @@ export type ProjectDocument = {
   /** Absolute CDN URL — Java resolves the stored R2 object key before this reaches the frontend. */
   url?: string;
   size?: number;
+  /** UP-RERA marks documents the promoter didn't need to upload as "Not applicable". */
+  not_applicable?: boolean;
 };
 
 export type ProjectBrochure = {
