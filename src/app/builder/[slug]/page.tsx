@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { api, ApiError } from "@/lib/api";
 import { districtHref } from "@/lib/districts";
 import { fmtNum } from "@/lib/format";
+import { ListingFacts } from "@/components/ListingFacts";
 import { ProjectListing, pageHref, pageNum } from "@/components/ProjectListing";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LeadBand, LinkCloud } from "@/components/LeadBand";
@@ -73,6 +74,8 @@ export default async function BuilderPage({ params, searchParams }: { params: Pa
 
       <div className="container listing-body">
         <ProjectListing filter={{ builder: builder.slug }} page={page} basePath={`/builder/${builder.slug}`} />
+
+        <ListingFacts filter={{ builder: builder.slug }} label={builder.name} page={page} showBuilder={false} />
 
         <LeadBand
           title={`Interested in a ${builder.name} project?`}

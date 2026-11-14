@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import { areaHref, districtHref, liveAreas, resolveDistrict } from "@/lib/districts";
 import { fmtNum } from "@/lib/format";
+import { ListingFacts } from "@/components/ListingFacts";
 import { ProjectListing, pageHref, pageNum } from "@/components/ProjectListing";
 import { LeadBand, LinkCloud } from "@/components/LeadBand";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -79,6 +80,8 @@ export default async function AreaPage({ params, searchParams }: { params: Param
 
       <div className="container listing-body">
         <ProjectListing filter={{ district, area: area.slug }} page={page} basePath={href} />
+
+        <ListingFacts filter={{ district, area: area.slug }} label={area.name} page={page} />
 
         <LeadBand
           title={`Looking for a home in ${area.name}?`}

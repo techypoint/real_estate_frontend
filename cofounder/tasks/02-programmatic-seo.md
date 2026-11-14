@@ -95,6 +95,30 @@ Issues (fix before launch — nothing meaningful indexed yet, so changes are fre
 7. **Builder slugs can change**: adding a brand later moves e.g. `/builder/gaursons-realtech` → `/builder/gaursons`; the old URL 404s. → **Deferred (founder)**: fix when it first happens — trigger: adding a brand to `builders.json` that absorbs a builder whose auto page is already live/indexed. Fix = redirect old auto slug → brand slug.
 8. **Long / generic project slugs**: 18 over 75 chars (Amrapali villa ranges), names like "PLOT NO.13-14". → Open, low priority: fix with a curated `display_name` when those projects go live.
 
+## Content phase — unique content on area and builder pages (agreed 2026-11-14)
+
+Why: the 2026-11-14 SEO audit found area/builder/district pages thin (175-350 words, mostly a project list).
+
+**Two kinds of content**
+1. **Computed facts, frontend, at render time:** project count and types, BHK range, starting price where known, possession years, side-by-side project table. Always fresh; nothing stored.
+2. **Generated text, stored on the Mongo `areas` / `builders` documents:** area guide (150-250 words, connectivity and social infrastructure), FAQ (3-4 Qs), builder "about" blurb (facts only, no reputation/rating/litigation claims).
+
+**Decisions**
+- Pipeline (`/home/deepak/agentic_ai`) picks one area or builder at a time and generates the text; only entities with **at least one live project**.
+- The pipeline does **not** write to Mongo directly: a backend endpoint (`real_estate_backend`) saves it, called by a structured tool, like `publishBlog`.
+- Stored as a `content` object: `status` (draft/approved), `sources[]`, `generatedAt`, `asOf`. The frontend renders it only when approved.
+- **Approval at both steps:** the pipeline's approval gate, then the admin panel.
+- Every factual claim needs a source URL; unsourced claims are dropped. Existing Compliance Reviewer runs on area text (steering language).
+- Flow to prod: generate and approve locally, then `sync-mongo-to-prod.sh` (it drops and restores `areas` and `builders`, so prod admin edits made in between are lost), then revalidate.
+
+**Checklist**
+- [x] Check the admin panel's JSON import doesn't overwrite the `content` field — safe: `AreaDirectory`/`BuilderDirectory` `update` only `$set`s name, match, updatedAt; import goes through it
+- [x] Frontend: computed stats and project comparison table (area, builder, district pages) — `ListingFacts` component, page 1 only (local, not yet committed)
+- [ ] Backend: save-content endpoint + `content` field on areas/builders; approve/unapprove in admin panel
+- [ ] Frontend: render approved guide / FAQ / blurb, with "last reviewed" date
+- [ ] Pipeline: area/builder content agents, source requirement, compliance check, approval gate
+- [ ] First run: Noida and Yamuna Expressway only, reviewed by hand, before builders
+
 ## Open questions
 - [x] Leads on non-agency projects? **Yes** — agency can work a lead on any project → every page carries the lead CTA.
 - [x] More districts? **Yes** — founder adds them via `real_estate_scripts`; pages must pick up new districts automatically.
@@ -120,3 +144,5 @@ Issues (fix before launch — nothing meaningful indexed yet, so changes are fre
 | 2026-11-14 | Installed claude-seo plugin (manual install, v2.6.0, code reviewed) and ran first audit of the live site: ~70/100. Report + plan in `cofounder/seo/acreinfotech.com-audit/`. Findings: site only has 3 projects / 6 posts; hub, area and builder pages thin (175-350 words); `www` host returns 200 (needs Cloudflare redirect); no og:image outside blog; titles too long; no Search Console. |
 | 2026-11-14 | Code fixes (local, not yet committed/deployed): default og/twitter image (`opengraph-image.tsx`), project pages use their gallery photo as og:image, titles fit ~60 chars and descriptions ≤155 via `src/lib/seo.ts`, homepage `WebSite` + `RealEstateAgent` JSON-LD. Still open: Cloudflare www→apex redirect, Search Console verification + sitemap submit (founder), unique content on area/builder/district pages, blog titles (100+ chars, come from the blog pipeline). |
 | 2026-11-14 | Founder: Search Console domain verified, sitemap submitted, Google is crawling and some pages are already indexed. Open item "Search Console verification" closed. |
+| 2026-11-14 | Content-phase scope agreed with founder: computed facts in frontend; generated guide/FAQ/blurb via agentic_ai pipeline saved through a backend endpoint onto Mongo areas/builders; only entities with 1+ live project; approval at both the pipeline gate and the admin panel. See "Content phase" section. |
+| 2026-11-14 | Content phase step 1+2 done: import can't clobber a `content` field; `ListingFacts` (sentence + comparison table from project data) on district, area and builder pages. Checked locally. Next: backend save-content endpoint + admin approve. |
